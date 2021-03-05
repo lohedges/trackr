@@ -78,7 +78,9 @@ int main()
     // Initalise the Kalman filter.
     KalmanFilter kalmanFilter(hits, distance, sigma);
 
-    // Execute the Kalman filter.
+    // Execute the Kalman filter. Run in "test" mode to avoid reshaping
+    // the vector of smoothed hits to match the input. As returned, it 
+    // is the same as the Python implementation.
     auto smoothed_hits = kalmanFilter.execute(true);
 
     // Store some pre-baked output form the Python implementation.

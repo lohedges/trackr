@@ -76,7 +76,7 @@ chosen input size and outputs the mean throughput and variance. When finished
 you should see output like the following:
 
 ```
-      10          1.093471      0.003755            100
+      10          1.089306      0.005029            100
 ```
 
 The columns are `tracks`, `throughput`, `variance`, `repeats`.
@@ -92,16 +92,16 @@ You should see output like the following:
 
 ```
 # Tracks        Throughput      Variance        Repeats
-       2          0.305949      0.000403         100000
-       4          0.555961      0.000674         100000
-       8          0.939210      0.002678         100000
-      16          1.432812      0.007701         100000
-      32          2.034638      0.014647         100000
-      64          2.376732      0.034811         100000
-     128          2.641721      0.039140         100000
-     256          2.948161      0.034092         100000
-     512          2.961904      0.027985         100000
-    1024          2.775675      0.021062         100000
+       2          0.307449      0.000472         100000
+       4          0.567414      0.000972         100000
+       8          0.995351      0.003125         100000
+      16          1.595489      0.011701         100000
+      32          2.364217      0.032905         100000
+      64          2.979356      0.040387         100000
+     128          3.469605      0.088055         100000
+     256          3.888345      0.064635         100000
+     512          4.053215      0.073310         100000
+    1024          3.720583      0.058653         100000
 ```
 
 The following figure shows benchmark results run on a ThinkPad P1 Gen 2 laptop
@@ -110,7 +110,7 @@ CPU. Error bars show the standard deviation of the throughput.
 
 ![Benchmarks.](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_weetabix.png)
 
-Here Clang is found to outperform GCC with a peak throughput of around 3.5
-million tracks per second at an input size of roughly 250 tracks. For a larger
+Here Clang is found to outperform GCC with a peak throughput of around 5.4
+million tracks per second at an input size of roughly 500 tracks. For a larger
 number of tracks, efficient parallelisation could likely be achieved by
 running in batches of this input size.
