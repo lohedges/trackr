@@ -1,0 +1,7 @@
+# Executables
+trackr_benchmark
+trackr_test
+
+# Benchmark plot files
+*.agr
+*.par
