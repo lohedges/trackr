@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
         // Record start time.
         auto start = std::chrono::high_resolution_clock::now();
 
-        // Execute the  Kalman filter.
+        // Execute the Kalman filter.
         auto smoothed_hits = kalmanFilter.execute();
 
         // Record end time.
