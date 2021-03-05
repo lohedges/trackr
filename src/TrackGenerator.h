@@ -19,7 +19,7 @@
 #define _TRACKGENERATOR_H
 
 #include <random>
-#include <tuple>
+#include <utility>
 
 #include <Eigen/Dense>
 
@@ -54,7 +54,7 @@ public:
     /*! \return num_planes
             The digitised and true track hits at each detector plane.
      */
-    std::tuple<Eigen::MatrixXf, Eigen::MatrixXf> generateTrack();
+    std::pair<Eigen::MatrixXf, Eigen::MatrixXf> generateTrack();
 
 private:
     /// The number of detector planes.

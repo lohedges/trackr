@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
         // Generate the tracks.
         for (int j=0; j<num_hits; ++j)
-            hits[j] = std::get<0>(trackGenerator.generateTrack());
+            hits[j] = (trackGenerator.generateTrack()).first;
 
         // Initalise the Kalman filter.
         KalmanFilter kalmanFilter(hits, distance, sigma);

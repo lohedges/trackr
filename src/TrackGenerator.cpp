@@ -48,7 +48,7 @@ TrackGenerator::TrackGenerator(
     this->seed = seed;
 }
 
-std::tuple<Eigen::MatrixXf, Eigen::MatrixXf> TrackGenerator::generateTrack()
+std::pair<Eigen::MatrixXf, Eigen::MatrixXf> TrackGenerator::generateTrack()
 {
     // Initialise matrices to hold the digitised and true track hits.
     Eigen::MatrixXf digit_hits(this->num_planes, 2);
@@ -93,5 +93,5 @@ std::tuple<Eigen::MatrixXf, Eigen::MatrixXf> TrackGenerator::generateTrack()
     }
 
     // Return the track.
-    return std::tuple<Eigen::MatrixXf, Eigen::MatrixXf>{digit_hits, true_hits};
+    return std::pair<Eigen::MatrixXf, Eigen::MatrixXf>{digit_hits, true_hits};
 }
