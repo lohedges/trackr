@@ -25,12 +25,13 @@
     #define M_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406
 #endif
 
-KalmanFilter::KalmanFilter(std::vector<Eigen::MatrixXf> hits,
-                           float distance,
-                           float sigma) :
-                           hits(hits),
-                           distance(distance),
-                           sigma(sigma)
+KalmanFilter::KalmanFilter(
+        std::vector<Eigen::MatrixXf> hits,
+        float distance,
+        float sigma) :
+        hits(hits),
+        distance(distance),
+        sigma(sigma)
 {
     // Store the number of hits and the number of detector planes.
     this->num_hits = hits.size();

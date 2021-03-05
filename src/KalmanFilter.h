@@ -34,7 +34,7 @@ public:
         \param sigma
             The resolution of the detector planes (in metres).
      */
-	KalmanFilter(std::vector<Eigen::MatrixXf> hits,
+     KalmanFilter(std::vector<Eigen::MatrixXf> hits,
                  float distance=1.0,
                  float sigma=10e-2
                 );

@@ -43,12 +43,12 @@ public:
             The random number seed. If this is negative then
             a seed will generated using std::random_device.
      */
-	TrackGenerator(int   num_planes=5,
+     TrackGenerator(int   num_planes=5,
                    float distance=1.0,
                    float sigma=10e-2,
                    float theta0=1e-3,
                    int   seed=-1
-                  );
+                   );
 
     //! Generate a track hit.
     /*! \return num_planes
