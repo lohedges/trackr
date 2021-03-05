@@ -106,11 +106,11 @@ You should see output like the following:
 
 The following figure shows benchmark results run on a ThinkPad P1 Gen 2 laptop
 with an [i7-9750H](https://www.intel.co.uk/content/www/uk/en/products/processors/core/i7-processors/i7-9750h.html)
-CPU.
+CPU. Error bars show the standard deviation of the throughput.
 
 ![Benchmarks.](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_weetabix.png)
 
 Here Clang is found to outperform GCC with a peak throughput of around 3.5
-million tracks per second at an input size of around 250 tracks. For a larger
+million tracks per second at an input size of roughly 250 tracks. For a larger
 number of tracks, efficient parallelisation could likely be achieved by
 running in batches of this input size.
