@@ -114,10 +114,8 @@ int main(int argc, char *argv[])
         // Record start time.
         auto start = std::chrono::high_resolution_clock::now();
 
-        // Execute the Kalman filter. Run in "test" mode to avoid reshaping
-        // the vector of smoothed hits to match the input. As returned, it 
-        // is the same as the Python implementation.
-        auto smoothed_hits = kalmanFilter.execute(true);
+        // Execute the Kalman filter and return the smoothed hits at each plane.
+        auto smoothed_hits = kalmanFilter.execute();
 
         // Record end time.
         auto finish = std::chrono::high_resolution_clock::now();

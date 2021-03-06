@@ -37,7 +37,7 @@ int main()
     // Initalise a vector to hold the tracks.
     std::vector<Eigen::MatrixXf> hits;
 
-    // Add some pre-baked tracks from the Python implementation.
+    // Add some reference tracks from the Python implementation.
 
     Eigen::MatrixXf hit(num_hits, 2);
     hit <<  0.02937927, -0.12062073,
@@ -78,12 +78,10 @@ int main()
     // Initalise the Kalman filter.
     KalmanFilter kalmanFilter(hits, distance, sigma);
 
-    // Execute the Kalman filter. Run in "test" mode to avoid reshaping
-    // the vector of smoothed hits to match the input. As returned, it 
-    // is the same as the Python implementation.
-    auto smoothed_hits = kalmanFilter.execute(true);
+    // Execute the Kalman filter and return the smoothed hits at each plane.
+    auto smoothed_hits = kalmanFilter.execute();
 
-    // Store some pre-baked output form the Python implementation.
+    // Store some reference eoutput form the Python implementation.
 
     std::vector<Eigen::MatrixXf> smoothed_hits_ref;
 

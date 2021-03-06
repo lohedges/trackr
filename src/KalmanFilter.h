@@ -35,25 +35,21 @@ public:
             The resolution of the detector planes (in metres).
      */
      KalmanFilter(std::vector<Eigen::MatrixXf> hits,
-                 float distance=1.0,
-                 float sigma=10e-2
+                  float distance=1.0,
+                  float sigma=10e-2
                 );
 
     //! Execute the Kalman filter.
-    /*! \param is_test
-            Whether this is a test run. If so, return the data in a format
-            consistent with that of the Python implementation.
-
-        \return smoothed_hits
-            The reconstructed and smoothed hits.
+    /*! \return smoothed_hits
+            The reconstructed and smoothed hits at each detector plane.
      */
-    std::vector<Eigen::MatrixXf> execute(bool is_test=false);
+    std::vector<Eigen::MatrixXf> execute();
 
 private:
-    /// The vector of track hits. (Each entry is x,y hit for each plane.)
+    /// The vector of track hits.
     std::vector<Eigen::MatrixXf> hits;
 
-    /// The vector of hits on each plane. (Each entry is x,y hits for a plane.)
+    /// The vector of hits for each detector plane.
     std::vector<Eigen::MatrixXf> hits_plane;
 
     /// The number of detector planes.
