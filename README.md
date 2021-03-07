@@ -198,6 +198,9 @@ CPU has 6 cores and 12 threads. The throughput shows a sawtooth structure
 with peaks at multiples of 12 batches, where all threads on the CPU are
 fully active.
 
+(Note that the single batch performance is lower than that obtained using
+`trackr_benchmark`. This is due to the overhead of using OpenMP.)
+
 
 | **Device**    | **Cores** | **32 bit FLOPS**   | **TDP**  | **Cost**   | **Peak throughput**    |
 |---------------|-----------|--------------------|----------|------------|------------------------|
@@ -208,10 +211,10 @@ fully active.
 
 \*\* Cost is taken as a quarter of the price of an IPU M2000, containing 4 IPUs.
 
-\*\*\* Single precision estimate at 3.6 GHz, which was sustained multicore frequency under test.
+\*\*\* Single precision estimate at 3.6 GHz, which was the sustained multicore frequency under test.
 
 A rough comparison of the throughput per dollar and per watt for the current
-implementations gives.
+implementations gives:
 
 | **Device**    | **Throughput per watt** | **Throughput per dollar** |
 |---------------|-------------------------|---------------------------|
