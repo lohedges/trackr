@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
         # pragma omp parallel for
         for (int j=0; j<num_batches; ++j)
             for (int k=0; k<num_hits; ++k)
-                hits[j][k] = (track_generators[j].generateTrack()).first;
+                hits[j][k] = track_generators[j].generateTrack().first;
 
         // Initalise a Kalman filter for each batch.
         std::vector<KalmanFilter> kalman_filters(num_batches);
