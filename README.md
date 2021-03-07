@@ -181,7 +181,7 @@ If we wish to adjust the number of tracks to the optimum for your CPU, then
 pass this as an argument to the script, e.g.:
 
 ```
-./benchmark_omp.sh
+./benchmark_omp.sh 100
 ```
 
 The following figure shows benchmark results for parallel track reconstruction
