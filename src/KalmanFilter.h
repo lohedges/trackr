@@ -24,6 +24,9 @@
 class KalmanFilter
 {
 public:
+    // Default constructor.
+    KalmanFilter();
+
     //! Constructor.
     /*! \param hits
             A vector of x,y track hits.
