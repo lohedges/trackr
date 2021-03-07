@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     float sigma = 10e-2;
     float theta0 = 1e-3;
     int   seed = 42;
-    int   repeats = 100;
+    int   num_repeats = 100;
 
     // Get the number of hits from the command-line.
     if (argc > 1)
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
         try
         {
             std::size_t pos;
-            repeats = std::stoi(arg, &pos);
+            num_repeats = std::stoi(arg, &pos);
             if (pos < arg.size())
             {
                 std::cerr << "Trailing characters after number: " << arg << '\n';
@@ -96,10 +96,10 @@ int main(int argc, char *argv[])
     // Summed throughput.
     double throughput_sum = 0;
 
-    // Initialise a vector to hold the throughput for each run.
-    std::vector<double> throughputs(repeats);
+    // Initialise a vector to hold the throughput for each repeat.
+    std::vector<double> throughputs(num_repeats);
 
-    for (int i=0; i<repeats; ++i)
+    for (int i=0; i<num_repeats; ++i)
     {
         // Initalise a vector to hold the tracks.
         std::vector<Eigen::MatrixXf> hits(num_hits);
@@ -129,22 +129,22 @@ int main(int argc, char *argv[])
     }
 
     // Calculate the mean throughput.
-    double mean = throughput_sum / repeats;
+    double mean = throughput_sum / num_repeats;
 
     // Calculate the variance.
     double sum = 0;
-    for (int i=0; i<repeats; ++i)
+    for (int i=0; i<num_repeats; ++i)
     {
         double tmp = throughputs[i] - mean;
         sum += tmp*tmp;
     }
-    double variance = sum / repeats;
+    double variance = sum / num_repeats;
 
     // Output timing statistics.
     std::cout << std::setw(8) << num_hits;
     std::cout << "\t" << std::setw(10) << std::setprecision(6) << std::fixed << mean;
     std::cout << "\t" << std::setw(8) << std::setprecision(6) << std::fixed << variance;
-    std::cout << "\t" << std::setw(7) << repeats;
+    std::cout << "\t" << std::setw(7) << num_repeats;
     std::cout << std::endl;
 
     return 0;
