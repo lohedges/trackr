@@ -205,13 +205,13 @@ fully active.
 | **Device**    | **Cores** | **32 bit FLOPS**   | **TDP**  | **Cost**   | **Peak throughput**    |
 |---------------|-----------|--------------------|----------|------------|------------------------|
 | Graphcore GC2 | 1216      | 31.1 TFLOPS        | 120 W \* | $8112 \*\* | 2.2 x 10^6 tracks / s  |
-| i7-9750H      | 6         | 0.7 TFLOPS \*\*\*  | 45 W     | $400       | 26 x 10^6 / tracks / s |
+| i7-9750H      | 6         | 0.3 TFLOPS \*\*\*  | 45 W     | $400       | 26 x 10^6 / tracks / s |
 
 \* Two IPUs per board, so half the board TDP.
 
 \*\* Cost is taken as a quarter of the price of an IPU M2000, containing 4 IPUs.
 
-\*\*\* Single precision estimate at 3.6 GHz, which was the sustained multicore frequency under test.
+\*\*\* Taken from published Geekbench 4 SGEMM score.
 
 A rough comparison of the throughput per dollar and per watt for the current
 implementations gives:
