@@ -199,22 +199,24 @@ with peaks at multiples of 12 batches, where all threads on the CPU are
 fully active.
 
 
-| **Device**             | **Cores** | **32 bit FLOPS**   | **TDP**  | **Cost**   | **Peak throughput**    |
-|------------------------|-----------|--------------------|----------|------------|------------------------|
-| Graphcore Colossus GC2 | 1216      | 31.1 TFLOPS        | 120 W \* | $8112 \*\* | 2.6 x 10^6 tracks / s  |
-| i7-9750H               | 6         | 0.7 TFLOPS \*\*\*  | 45 W     | $400       | 26 x 10^6 / tracks / s |
+| **Device**    | **Cores** | **32 bit FLOPS**   | **TDP**  | **Cost**   | **Peak throughput**    |
+|---------------|-----------|--------------------|----------|------------|------------------------|
+| Graphcore GC2 | 1216      | 31.1 TFLOPS        | 120 W \* | $8112 \*\* | 2.6 x 10^6 tracks / s  |
+| i7-9750H      | 6         | 0.7 TFLOPS \*\*\*  | 45 W     | $400       | 26 x 10^6 / tracks / s |
 
 \* Two IPUs per board, so half the board TDP.
+
 \*\* Cost is taken as a quarter of the price of an IPU M2000, containing 4 IPUs.
+
 \*\*\* Single precision estimate at 3.6 GHz, which was sustained multicore frequency under test.
 
 A rough comparison of the throughput per dollar and per watt for the current
 implementations gives.
 
-| **Device**             | **Throughput per watt** | **Throughput per dollar** |
-|------------------------|-------------------------|---------------------------|
-| Graphcore Colossus GC2 | 2.17 x 10^4 tracks / s  | 321 tracks / s            |
-| i7-9750H               | 2.17 x 10^5 tracks / s  | 65000 tracks / s          |
+| **Device**    | **Throughput per watt** | **Throughput per dollar** |
+|---------------|-------------------------|---------------------------|
+| Graphcore GC2 | 2.17 x 10^4 tracks / s  | 321 tracks / s            |
+| i7-9750H      | 2.17 x 10^5 tracks / s  | 65000 tracks / s          |
 
 The CPU implementation is roughly an order of magnitude more power efficient
 and two-orders of magnitude more cost efficient.
