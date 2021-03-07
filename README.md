@@ -191,8 +191,8 @@ standard deviation of the throughput.
 ![Benchmarks.](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_weetabix_omp.png)
 
 By wrapping the Kalman filter execution in a simple `#pramga omp parallel for`
-loop, we have increased the peak throughput to around 26 million tracks per
-second using 12 batches of 500 tracks running in parallel. Note that the
+loop the peak throughput is increased to around 26 million tracks per second
+when using 12 batches of 500 tracks running in parallel. Note that the
 [i7-9750H](https://www.intel.co.uk/content/www/uk/en/products/processors/core/i7-processors/i7-9750h.html)
 CPU has 6 cores and 12 threads. The throughput shows a sawtooth structure
 with peaks at multiples of 12 batches, where all threads on the CPU are
