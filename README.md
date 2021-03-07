@@ -115,7 +115,7 @@ million tracks per second at an input size of roughly 500 tracks. For a larger
 number of tracks, efficient parallelisation could likely be achieved by
 running in batches of this input size.
 
-As an example, the `trackr_benchmark_omp` script executes the Kalman filter in
+As an example, the `trackr_benchmark_omp` binary executes the Kalman filter in
 parallel using [OpenMP](https://www.openmp.org). For example, we can run 5
 batches of the 500 tracks in parallel and average over 100 repeats by running
 the following:
