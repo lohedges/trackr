@@ -8,9 +8,9 @@ else
 fi
 
 num_batches=$(seq 30)
-repeats=10000
+num_repeats=10000
 
 echo -e "# Tracks\tThroughput\tVariance\tRepeats\tBatches"
 for batches in ${num_batches[@]}; do
-    ./trackr_benchmark_omp $num_tracks 100 $batches
+    ./trackr_benchmark_omp $num_tracks $num_repeats $batches
 done
