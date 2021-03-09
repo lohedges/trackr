@@ -116,8 +116,8 @@ CPU. Error bars show the standard deviation of the throughput.
 
 Here Clang is found to outperform GCC with a peak throughput of around 5.4
 million tracks per second at an input size of roughly 500 tracks. For a larger
-number of tracks, efficient parallelisation could likely be achieved by
-running in batches of this input size.
+number of tracks, efficient parallelisation can be achieved by running in batches
+of this input size.
 
 As an example, the `trackr_benchmark_omp` binary executes the Kalman filter in
 parallel using [OpenMP](https://www.openmp.org). For example, we can run 5
