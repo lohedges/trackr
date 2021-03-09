@@ -33,6 +33,10 @@ the `CXX` argument to `make`, e.g.:
 make CXX=clang++
 ```
 
+When using Clang you'll need to `libomp` package for OpenMP support. If
+compiling on macOS you'll also explicitly need to pass `CXX=clang++` to
+use Clang, since Apple use a GCC frontend to an LLVM backend.
+
 The code requires a `C++11` compliant compiler and is also compiled with `-O3`
 optimisation flags by default. To pass additional flags, use the `OPTFLAGS`
 argument, e.g.:
