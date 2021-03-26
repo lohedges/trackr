@@ -70,10 +70,10 @@ KalmanFilter::KalmanFilter(
     // Weight matrix for measurement noise.
     float sigma_sqd = sigma*sigma;
     float x = 1.0 / (sigma_sqd);
-    this-> G << x, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, x, 0,
-                0, 0, 0, 0;
+    this->G << x, 0, 0, 0,
+               0, 0, 0, 0,
+               0, 0, x, 0,
+               0, 0, 0, 0;
 
     // Matrix for relationship between measurement 'm' and state 'p'.
     this->H << 1, 0, 0, 0,

@@ -40,7 +40,7 @@ public:
      KalmanFilter(std::vector<Eigen::MatrixXf> hits,
                   float distance=1.0,
                   float sigma=10e-2
-                );
+                 );
 
     //! Execute the Kalman filter.
     /*! \return smoothed_hits
