@@ -5,7 +5,7 @@ Track reconstruction in C++ using a Kalman filter implemented with
 
 This repository is based on [code](https://github.com/dpohanlon/IPU4HEP)
 by Daniel O'Hanlon and is intended to test and benchmark the track
-reconstruction implementation described in [this](https://arxiv.org/pdf/2008.09210.pdf)
+reconstruction implementation described in [this](https://link.springer.com/article/10.1007/s41781-021-00057-z)
 paper.
 
 ## Compiling
