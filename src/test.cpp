@@ -30,6 +30,7 @@ int main()
     // Set model parameters. This will ultimately be read from file, or passed
     // on the command-line.
     int   num_hits = 5;
+    int   num_planes = 5;
     float distance = 1;
     float sigma = 10e-2;
     float theta0 = 1e-3;
@@ -39,7 +40,7 @@ int main()
 
     // Add some reference tracks from the Python implementation.
 
-    Eigen::MatrixXf hit(num_hits, 2);
+    Eigen::MatrixXf hit(num_planes, 2);
     hit <<  0.02937927, -0.12062073,
             0.02937927, -0.12062073,
            -0.12062073, -0.42062073,
