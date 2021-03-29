@@ -136,8 +136,8 @@ std::vector<Eigen::MatrixXf> KalmanFilter::execute()
         mm.row(2) = m.row(1);
 
         // Calculate the filtered state.
-        auto tmp = (p_proj.transpose() * C_proj.inverse()) + (mm.transpose() * HTG);
-        auto p_filt = (tmp * C_filt).transpose();
+        auto tmp = (C_proj.inverse() * p_proj) + (HTG * mm);
+        auto p_filt = C_filt * tmp;
 
         // Store the filtered state and covariance.
         p_filts[i] = p_filt;
