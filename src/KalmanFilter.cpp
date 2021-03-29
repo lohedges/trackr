@@ -107,8 +107,8 @@ std::vector<Eigen::MatrixXf> KalmanFilter::execute()
 
     // Pre-compute re-used variables.
     auto FT = this->F.transpose();
-    auto HG = this->H.transpose() * this->G;
-    auto HGH = HG * this->H;
+    auto HTG = this->H.transpose() * this->G;
+    auto HTGH = HTG * this->H;
 
     // Initalise a matrix for the measurements: ({ x, tan(theta), y, tan(phi) }
     Eigen::MatrixXf mm = Eigen::MatrixXf::Zero(4, this->num_hits);
@@ -128,7 +128,7 @@ std::vector<Eigen::MatrixXf> KalmanFilter::execute()
         // Now perform the filter.
 
         // Calculate the filtered covariance matrix.
-        auto C_filt = (C_proj.inverse() + HGH).inverse();
+        auto C_filt = (C_proj.inverse() + HTGH).inverse();
 
         // Extract the hits for the ith plane.
         auto m = this->hits_plane[i].transpose();
@@ -136,7 +136,7 @@ std::vector<Eigen::MatrixXf> KalmanFilter::execute()
         mm.row(2) = m.row(1);
 
         // Calculate the filtered state.
-        auto tmp = (p_proj.transpose() * C_proj.inverse()) + (mm.transpose() * HG);
+        auto tmp = (p_proj.transpose() * C_proj.inverse()) + (mm.transpose() * HTG);
         auto p_filt = (tmp * C_filt).transpose();
 
         // Store the filtered state and covariance.
