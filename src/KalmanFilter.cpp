@@ -93,8 +93,8 @@ std::vector<Eigen::MatrixXf> KalmanFilter::execute()
     // Initalise state of system: { x, tan(theta), y, tan(phi) }
     // Use {x, 0, y, 0} for hits from the first plane.
     Eigen::MatrixXf p0 = Eigen::MatrixXf::Zero(4, this->num_hits);
-    p0.row(0) = hits_plane[0].col(0).transpose();
-    p0.row(2) = hits_plane[0].col(1).transpose();
+    p0.row(0) = this->hits_plane[0].col(0).transpose();
+    p0.row(2) = this->hits_plane[0].col(1).transpose();
 
     std::vector<Eigen::MatrixXf> p_projs(this->num_planes);
     std::vector<Eigen::MatrixXf> C_projs(this->num_planes);
