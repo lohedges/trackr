@@ -2,6 +2,8 @@
 trackr_test
 trackr_benchmark
 trackr_benchmark_omp
+trackr_test_ipu
+trackr_benchmark_ipu
 _
 # Benchmark plot files
 *.agr
