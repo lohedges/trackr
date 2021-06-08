@@ -134,9 +134,7 @@ int main()
         auto b = smoothed_hits_ref[i].reshaped();
 
         for (int j=0; j<smoothed_hits[i].size(); ++j)
-        {
-            assert (abs(a[i] - b[i]) < delta);
-        }
+            assert (abs(a[j] - b[j]) < delta);
     }
 
     std::cout << "Hooray, test passed!\n";
