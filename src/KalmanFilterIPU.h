@@ -45,6 +45,12 @@ public:
         \param hits
             A vector of x,y track hits.
 
+        \param num_tiles
+            The number of IPU tiles to run on.
+
+        \param hits_per_tile
+            The number of track hits to process per IPU tile..
+
         \param distance
             The distance between detector planes (in metres).
 
@@ -53,6 +59,8 @@ public:
      */
      KalmanFilterIPU(poplar::Device device,
                      std::vector<MatrixRowMajorXf> hits,
+                     int   num_tiles,
+                     int   hits_per_tile,
                      float distance=1.0,
                      float sigma=10e-2
                     );
@@ -72,6 +80,12 @@ private:
 
     /// The vector of hits for each detector plane.
     std::vector<MatrixRowMajorXf> hits_plane;
+
+    /// The number of IPU tiles to use.
+    int num_tiles;
+
+    /// The number of track hits to process per IPU tile.
+    int hits_per_tile;
 
     /// The number of detector planes.
     int num_planes;

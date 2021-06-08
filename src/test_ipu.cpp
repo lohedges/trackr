@@ -35,11 +35,15 @@ int main()
 {
     // Set model parameters. This will ultimately be read from file, or passed
     // on the command-line.
-    int   num_hits = 5;
+    int   num_tiles = 1;
+    int   hits_per_tile = 5;
     int   num_planes = 5;
     float distance = 1;
     float sigma = 10e-2;
     float theta0 = 1e-3;
+
+    // Work out the number of hits.
+    int num_hits = num_tiles * hits_per_tile;
 
     // Initalise a vector to hold the tracks.
     std::vector<MatrixRowMajorXf> hits;
@@ -86,7 +90,12 @@ int main()
     auto device = setIpuDeviceWithIpuModelFallBack();
 
     // Initalise the Kalman filter.
-    KalmanFilterIPU kalmanFilter(std::move(device), hits, distance, sigma);
+    KalmanFilterIPU kalmanFilter(std::move(device),
+                                 hits,
+                                 num_tiles,
+                                 hits_per_tile,
+                                 distance,
+                                 sigma);
 
     // Execute the Kalman filter and return the smoothed hits at each plane.
     double secs;

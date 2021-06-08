@@ -36,15 +36,17 @@ int main(int argc, char *argv[])
 {
     // Set model parameters. This will ultimately be read from file, or passed
     // on the command-line.
-    int   num_hits = 5;
+    int   num_tiles = 1;
+    int   hits_per_tile = 5;
     int   num_planes = 5;
     float distance = 1;
     float sigma = 10e-2;
     float theta0 = 1e-3;
     int   seed = 42;
     int   num_repeats = 100;
+    int   num_hits;
 
-    // Get the number of hits from the command-line.
+    // Get the number of tiles from the command-line.
     if (argc > 1)
     {
         std::string arg = argv[1];
@@ -52,7 +54,30 @@ int main(int argc, char *argv[])
         try
         {
             std::size_t pos;
-            num_hits = std::stoi(arg, &pos);
+            num_tiles = std::stoi(arg, &pos);
+            if (pos < arg.size())
+            {
+                std::cerr << "Trailing characters after number: " << arg << '\n';
+            }
+        }
+        catch (std::invalid_argument const &ex)
+        {
+            std::cerr << "Invalid number: " << arg << '\n';
+        }
+        catch (std::out_of_range const &ex)
+        {
+            std::cerr << "Number out of range: " << arg << '\n';
+        }
+    }
+    // Get the number of hits-per-tile from the command-line.
+    if (argc > 2)
+    {
+        std::string arg = argv[2];
+
+        try
+        {
+            std::size_t pos;
+            hits_per_tile = std::stoi(arg, &pos);
             if (pos < arg.size())
             {
                 std::cerr << "Trailing characters after number: " << arg << '\n';
@@ -68,9 +93,9 @@ int main(int argc, char *argv[])
         }
     }
     // Get the number of repeats from the command-line.
-    if (argc > 2)
+    if (argc > 3)
     {
-        std::string arg = argv[2];
+        std::string arg = argv[3];
 
         try
         {
@@ -90,6 +115,9 @@ int main(int argc, char *argv[])
             std::cerr << "Number out of range: " << arg << '\n';
         }
     }
+
+    // Work out the number of hits.
+    num_hits = num_tiles * hits_per_tile;
 
     // Initialise the track generator.
     TrackGenerator trackGenerator(num_planes,
@@ -117,7 +145,12 @@ int main(int argc, char *argv[])
         auto device = setIpuDevice();
 
         // Initalise the Kalman filter.
-        KalmanFilterIPU kalmanFilter(std::move(device), hits, distance, sigma);
+        KalmanFilterIPU kalmanFilter(std::move(device),
+                                     hits,
+                                     num_tiles,
+                                     hits_per_tile,
+                                     distance,
+                                     sigma);
 
         // The time for the IPU engine to run in seconds.
         double secs;
@@ -143,7 +176,8 @@ int main(int argc, char *argv[])
     double variance = sum / num_repeats;
 
     // Output timing statistics.
-    std::cout << std::setw(8) << num_hits;
+    std::cout << std::setw(8) << num_tiles;
+    std::cout << "\t" << std::setw(17) << hits_per_tile;
     std::cout << "\t" << std::setw(10) << std::setprecision(6) << std::fixed << mean;
     std::cout << "\t" << std::setw(8) << std::setprecision(6) << std::fixed << variance;
     std::cout << "\t" << std::setw(7) << num_repeats;
