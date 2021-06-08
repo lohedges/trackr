@@ -117,7 +117,7 @@ std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute()
     std::vector<MatrixRowMajorXf> p_smoothed;
     for (int i=0; i<this->num_planes; ++i)
     {
-        p_smoothed.push_back(p_smooths.block(4*i, 0, 4, 4));
+        p_smoothed.push_back(p_smooths.block(4*i, 0, 4, this->num_hits));
     }
 
     return p_smoothed;
