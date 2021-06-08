@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 {
     // Set model parameters. This will ultimately be read from file, or passed
     // on the command-line.
-    int   num_hits = 4;
+    int   num_hits = 5;
     int   num_planes = 5;
     float distance = 1;
     float sigma = 10e-2;
