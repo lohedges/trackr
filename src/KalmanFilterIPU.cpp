@@ -15,6 +15,7 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <vector>
@@ -99,14 +100,24 @@ KalmanFilterIPU::KalmanFilterIPU(
     this->setupGraphProgram();
 }
 
-std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute()
+std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute(double &secs)
 {
     // Initialise the Poplar engine and load the IPU device.
     poplar::Engine engine(this->graph, this->prog);
     engine.load(this->device);
 
+    // Record start time.
+    auto start = std::chrono::high_resolution_clock::now();
+
     // Run the program.
     engine.run(0);
+
+    // Record end time.
+    auto finish = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = finish - start;
+
+    // Calculate run time in seconds..
+    secs = std::chrono::duration<double>(elapsed).count();
 
     // Read the data back into a single matrix packed as hits along the columns
     // and planes along the rows. (Every fourth row is the start of a new plane.)

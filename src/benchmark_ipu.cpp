@@ -15,7 +15,6 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
@@ -120,18 +119,12 @@ int main(int argc, char *argv[])
         // Initalise the Kalman filter.
         KalmanFilterIPU kalmanFilter(std::move(device), hits, distance, sigma);
 
-        // Record start time.
-        auto start = std::chrono::high_resolution_clock::now();
+        // The time for the IPU engine to run in seconds.
+        double secs;
 
         // Execute the Kalman filter and return the smoothed hits at each plane.
-        auto smoothed_hits = kalmanFilter.execute();
+        auto smoothed_hits = kalmanFilter.execute(secs);
 
-        // Record end time.
-        auto finish = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = finish - start;
-
-        // Calculate and store the throughput.
-        double secs = std::chrono::duration<double>(elapsed).count();
         double throughput = (num_hits / secs) / 1e6;
         throughput_sum += throughput;
         throughputs[i] = throughput;

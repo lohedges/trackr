@@ -89,7 +89,8 @@ int main()
     KalmanFilterIPU kalmanFilter(std::move(device), hits, distance, sigma);
 
     // Execute the Kalman filter and return the smoothed hits at each plane.
-    auto smoothed_hits = kalmanFilter.execute();
+    double secs;
+    auto smoothed_hits = kalmanFilter.execute(secs);
 
     // Store some reference eoutput form the Python implementation.
 

@@ -58,10 +58,13 @@ public:
                     );
 
     //! Execute the Kalman filter.
-    /*! \return smoothed_hits
+    /*! \param secs
+            The time taken for the IPU engine to run in seconds.
+
+        \return smoothed_hits
             The reconstructed and smoothed hits at each detector plane.
      */
-    std::vector<MatrixRowMajorXf> execute();
+    std::vector<MatrixRowMajorXf> execute(double&);
 
 private:
     /// The vector of track hits.
