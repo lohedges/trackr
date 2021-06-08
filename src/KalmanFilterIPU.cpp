@@ -19,9 +19,6 @@
 #include <iostream>
 #include <vector>
 
-#include <poplin/codelets.hpp>
-#include <poplin/MatMul.hpp>
-
 #include "KalmanFilterIPU.h"
 
 #ifndef M_PI
