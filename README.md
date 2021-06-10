@@ -112,7 +112,7 @@ The following figure shows benchmark results run on a ThinkPad P1 Gen 2 laptop
 with an [i7-9750H](https://www.intel.co.uk/content/www/uk/en/products/processors/core/i7-processors/i7-9750h.html)
 CPU. Error bars show the standard deviation of the throughput.
 
-![Benchmarks.](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_weetabix.png)
+![Benchmarks CPU.](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_weetabix.png)
 
 Here Clang is found to outperform GCC with a peak throughput of around 5.4
 million tracks per second at an input size of roughly 500 tracks. For a larger
@@ -192,7 +192,7 @@ The following figure shows benchmark results for parallel track reconstruction
 run on the same ThinkPad P1 Gen 2 laptop, where error bars again show the
 standard deviation of the throughput.
 
-![Benchmarks.](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_weetabix_omp.png)
+![Benchmarks CPU OpenMP.](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_weetabix_omp.png)
 
 By wrapping the Kalman filter execution in a simple `#pramga omp parallel for`
 loop the peak throughput is increased to around 26 million tracks per second
@@ -204,7 +204,6 @@ fully active.
 
 (Note that the single batch performance is lower than that obtained using
 `trackr_benchmark`. This is due to the overhead of using OpenMP.)
-
 
 | **Device**    | **Cores** | **32 bit FLOPS**   | **TDP**  | **Cost**   | **Peak throughput**    |
 |---------------|-----------|--------------------|----------|------------|------------------------|
@@ -227,3 +226,136 @@ implementations gives:
 
 The CPU implementation is roughly 30 times more power efficient and 240 times
 more cost efficient at present.
+
+## IPU: Redux
+
+Starting from scratch, the IPU implementation has now be re-worked to consolidate
+all operations into a single codelet, i.e. the entire projection, filter, and
+smoothing stages of the Kalman filter. The codelet can operate on an arbitrary
+number of tracks in serial within a single vertex. (Within the memory limits
+of an IPU tile.) For efficient parallelisation, multiple batches of tracks can
+be processed by separate vertices that are mapped to different tiles, forming
+a _compute set_. Each vertex receives its own copy of the required Kalman
+matrices, with any constant terms in the equations pre-computed to avoid
+unnecessary operations. At present, the codelet uses a set of hand-rolled, and
+unoptimised matrix operations. There should be plenty of scope for improving
+performance by vectorising these. (Note that the codelet is compiled with `-O3`
+optimisations, however.)
+
+The IPU code can be compiled using:
+
+```
+make ipu
+```
+
+(Note that paths to the Poplar SDK are currently hardcoded, so would need to
+be adjusted for your particular setup. Our version of the SDK is also compiled
+using the old CXX11 ABI.)
+
+To test the IPU implementation, run:
+
+```
+./track_test_ipu
+```
+
+If successful, you should once again see:
+
+```
+Hooray, test passed!
+```
+
+Note that the test uses a single vertex, i.e. the test tracks are batched and
+run in serial. We have also validated that the test passes when parallelising
+over tiles using a single track per tile.
+
+The IPU implementation can be benchmarked using using `trackr_benchmark_ipu`, e.g.:
+
+```
+./trackr_benchmark_ipu 256 100 100
+```
+
+The first argument is the number of tiles to run on, the second is the number
+of tracks per tile, and the third is the number of repeats. When finished you
+should see output like the following:
+
+```
+     256	              100	 18.846300	1.294070	    100
+```
+
+The columns are `tiles`, `tracks-per-tile`, `throughput`, `variance`, `repeats`.
+
+Another benchmark script, `benchmark_ipu.sh`, is provided to test the
+performance of the IPU implementation using a different number of tiles and
+tracks per tile. To run it:
+
+```
+./benchmark_ipu.sh 200
+```
+
+Here, the value of 200 that is passed to the script is the number of tracks per
+tile. The script will then measure performance for this batch size across a
+range of tile numbers using 100 repeats.
+
+You should see output like the following:
+
+```
+#  Tiles	Tracks (per tile)	Throughput	Variance	Repeats
+       2	              200	  0.184652	0.000000	    100
+       4	              200	  0.372116	0.000001	    100
+       8	              200	  0.743286	0.000020	    100
+      19	              200	  1.769149	0.000023	    100
+      38	              200	  3.478308	0.003301	    100
+      76	              200	  7.054743	0.000795	    100
+     152	              200	 14.127182	0.001852	    100
+     192	              200	 17.839186	0.003172	    100
+     256	              200	 21.787933	0.200980	    100
+     304	              200	 25.587167	0.435657	    100
+     342	              200	 28.950420	2.432793	    100
+     456	              200	 38.786932	4.290949	    100
+     608	              200	 54.308519	1.226884	    100
+     912	              200	 70.847941	104.611908	    100
+    1216	              200	 92.133103	208.197903	    100
+```
+
+Note that we only consider data transfer of the smoothed tracks from a single
+tile for the purposes of testing. Here the benchmarks are concerned with the
+raw processing power and we will consider strategies for efficient data transfer
+later. It also should be noted that connecting a data stream to each tile has a
+memory overhead that reduces the total number of tracks that it is possible to
+batch on each tile, so the throughput numbers should be taken with a grain of
+salt.
+
+The following figure shows benchmark results for a range of batch sizes run on
+a single IPU, i.e parallelisation across the tiles of a single IPU only. Once
+again, error bars show the standard deviation of the throughput.
+
+![Benchmarks IPU.](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_ipu.png)
+
+(The benchmarks code was compiled with Clang 10.0.0. Near identical performance
+was found using GCC 10.1.0.)
+
+The throughput for all batch sizes is seen to scale approximately linearly as
+the number of tiles is increased, as expected for an embarrassingly parallel
+(beautifully serial) workload. Increasing the number of tracks that are processed
+on each tile increases the throughput, with a peak of approximately 110 million
+tracks per second when processing 400 tracks on all 1216 tiles of the IPU. (In
+the current setup, 400 tracks is approximately at the memory limit of each
+tile.)
+
+The following tables show updates of the CPU and IPU performance comparison.
+
+| **Device**    | **Cores** | **32 bit FLOPS**   | **TDP**  | **Cost**   | **Peak throughput**    |
+|---------------|-----------|--------------------|----------|------------|------------------------|
+| Graphcore GC2 | 1216      | 31.1 TFLOPS        | 120 W    | $8112      | 110 x 10^6 tracks / s  |
+| i7-9750H      | 6         | 0.3 TFLOPS         | 45 W     | $400       | 26 x 10^6 / tracks / s |
+
+A rough comparison of the throughput per dollar and per watt for the current
+implementations gives:
+
+| **Device**    | **Throughput per watt** | **Throughput per dollar** |
+|---------------|-------------------------|---------------------------|
+| Graphcore GC2 | 9.17 x 10^5 tracks / s  | 13560 tracks / s          |
+| i7-9750H      | 5.77 x 10^5 tracks / s  | 65000 tracks / s          |
+
+The IPU implementation is now more energy efficient, although the CPU gives
+still gives around 5 times the performance per dollar.

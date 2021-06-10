@@ -7,7 +7,7 @@ else
 fi
 
 num_tiles=(2 4 8 19 38 76 152 192 256 304 342 456 608 912 1216)
-repeats=10
+repeats=100
 
 echo -e "#  Tiles\tTracks (per tile)\tThroughput\tVariance\tRepeats"
 for num in ${num_tiles[@]}; do
