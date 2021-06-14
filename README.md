@@ -363,7 +363,7 @@ still gives around 5 times the performance per dollar.
 Note that the benchmark code was compiled with `-O3` optimisation flags. Further
 tests have shown that the `-O2` optimisation level performs slightly better at
 roughly 120 million tracks per scond using batches of 400 tracks on all 1216
-tiles of a single IPU. In constrast, when turning off optimisations, i.e. -O0,
+tiles of a single IPU. In constrast, when turning off optimisations, i.e. `-O0`,
 the performance drops to around 1.6 million tracks per second. Having removed
 all additional compiler flags passed to `graph.addCodelets`, it appears that the
 default optimisation level is `-O2`, hence the original code _should_ have been
