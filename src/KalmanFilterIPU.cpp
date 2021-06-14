@@ -95,9 +95,11 @@ KalmanFilterIPU::KalmanFilterIPU(
                 0,         0,    sigma_sqd, 0,
                 0,         0,    0,         M_PI;
 
-    // Initalise the graph and apply codelets.
+    // Initalise the graph and apply codelets. Set optimisation level to -O2,
+    // which gives the best performance at present. (This is also the default
+    // optimisation level when no additional compiler flags are specified.)
     poplar::Graph graph(this->device);
-    graph.addCodelets({"src/KalmanFilterCodelet.cpp"}, "-O3");
+    graph.addCodelets({"src/KalmanFilterCodelet.cpp"}, "-O2");
     this->graph = std::move(graph);
 
     // Setup the graph program.
