@@ -19,13 +19,13 @@
 
 // Unoptimised helper functions prototypes.
 
-// Copy a tensor 'in' into 'out'.
+// Copy a tensor 'in' into 'out'. The offsets allow us to specify the
+// starting row in the input and output tensor to begin reading and
+// writing.
 void copy_IO(poplar::Vector<poplar::Input<poplar::Vector<float>>> &in,
              poplar::Vector<poplar::InOut<poplar::Vector<float>>> &out,
              int offset_in,
              int offset_out);
-
-// Copy a tensor 'in' into 'out'.
 void copy_OO(poplar::Vector<poplar::InOut<poplar::Vector<float>>> &in,
              poplar::Vector<poplar::InOut<poplar::Vector<float>>> &out,
              int offset_in,
