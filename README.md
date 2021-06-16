@@ -395,3 +395,6 @@ some interesting features that will be investigated further. While the
 threaded performance initially increases approximately linearly, there
 is then a slight drop-off in performance as the number of tiles increases.
 Beyond approximately 400 tiles the performance increases linearly once more.
+(In particular, the 6-thread throughput for batches of 100 tracks actually
+dips below that of the single threaded code when using between approximately
+250 and 550 tiles.)
