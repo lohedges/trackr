@@ -382,8 +382,9 @@ thread zero. For example, if 100 tracks were assigned to a tile then 20 tracks
 would be assigned to thread 0 and 16 to threads 1 through 5.
 
 The following figure shows benchmark comparison between batch sizes of 100,
-200, and 400 tracks run on different number of tiles, using both a single
+200, and 400 tracks run on different numbers of tiles, using both a single
 vertex per tile, and 6 vertices per tile, i.e. expoiting all hardware threads.
+All data has been averaged over 100 independent repeats.
 
 ![Benchmarks IPU (threaded).](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_ipu_threaded.png)
 
