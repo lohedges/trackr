@@ -368,3 +368,30 @@ the performance drops to around 1.6 million tracks per second. Having removed
 all additional compiler flags passed to `graph.addCodelets`, it appears that the
 default optimisation level is `-O2`, hence the original code _should_ have been
 compiled with this level of optimisation enabled.
+
+Each IPU tile has 6 hardware worker threads that run in a time-sliced fashion.
+By scheduling multile vertices on the same tile within the same compute set, we
+can use task-based parallelism to hide instruction and memory latency and
+increase throughput by approximately 6x (theoretically). For the Kalman filter
+code, this can be achieved by splitting the tracks assigned to each tile over
+six separate vertices, i.e. we first parellelise the tracks over the tiles
+of the IPU, then within each tile we further parellelise over the 6 hardware
+threads. When the number of tracks that are assigned to each tile doesn't
+perfectly divide between the 6 threads, then the remainder are assigned to
+thread zero. For example, if 100 tracks were assigned to a tile then 20 tracks
+would be assigned to thread 0 and 16 to threads 1 through 5.
+
+The following figure shows benchmark comparison between batch sizes of 100,
+200, and 400 tracks run on different number of tiles, using both a single
+vertex per tile, and 6 vertices per tile, i.e. expoiting all hardware threads.
+
+![Benchmarks IPU (threaded).](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_ipu_threaded.png)
+
+For all batch sizes there is a marked increase in performance when using
+6 hardware threads on all tiles of the IPU. For the largest batch size, 400,
+the peaks throughput reachs around 430 million tracks per second, a four-fold
+increase on the single-threaded performance. The throughput scaling shows
+some interesting features that will be investigated further. While the
+threaded performance initially increases approximately linearly, there
+is then a slight drop-off in performance as the number of tiles increases.
+Beyond approximately 400 tiles the performance increases linearly once more.
