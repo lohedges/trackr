@@ -106,11 +106,15 @@ KalmanFilterIPU::KalmanFilterIPU(
     this->setupGraphProgram();
 }
 
-std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute(double &secs)
+std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute(double &secs, bool warmup)
 {
     // Initialise the Poplar engine and load the IPU device.
     poplar::Engine engine(this->graph, this->prog);
     engine.load(this->device);
+
+    // Perform a warmup run.
+    if (warmup)
+        engine.run(0);
 
     // Record start time.
     auto start = std::chrono::high_resolution_clock::now();

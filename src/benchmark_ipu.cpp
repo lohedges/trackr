@@ -155,8 +155,9 @@ int main(int argc, char *argv[])
         // The time for the IPU engine to run in seconds.
         double secs;
 
-        // Execute the Kalman filter and return the smoothed hits at each plane.
-        auto smoothed_hits = kalmanFilter.execute(secs);
+        // Execute the Kalman filter and return the smoothed hits at each plane,
+        // performing a "warmup" run prior to timing the benchmark.
+        auto smoothed_hits = kalmanFilter.execute(secs, true);
 
         double throughput = (num_hits / secs) / 1e6;
         throughput_sum += throughput;

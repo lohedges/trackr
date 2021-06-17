@@ -69,10 +69,13 @@ public:
     /*! \param secs
             The time taken for the IPU engine to run in seconds.
 
+        \param warmup
+            Whether to perform a "warmup" run. This is useful when benchmarking.
+
         \return smoothed_hits
             The reconstructed and smoothed hits at each detector plane.
      */
-    std::vector<MatrixRowMajorXf> execute(double&);
+    std::vector<MatrixRowMajorXf> execute(double&, bool warmup=false);
 
 private:
     /// The vector of track hits.
