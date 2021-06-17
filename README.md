@@ -1,14 +1,18 @@
 # TrackR
 
-Track reconstruction in C++ using a Kalman filter implemented with
-[Eigen](https://eigen.tuxfamily.org).
+Track reconstruction in C++ using a Kalman filter.Implemented with
+[Eigen](https://eigen.tuxfamily.org) on the CPU and using the
+[Poplar SDK](https://www.graphcore.ai/products/poplar) on the
+[IPU](https://www.graphcore.ai).
 
 This repository is based on [code](https://github.com/dpohanlon/IPU4HEP)
 by Daniel O'Hanlon and is intended to test and benchmark the track
 reconstruction implementation described in [this](https://link.springer.com/article/10.1007/s41781-021-00057-z)
 paper.
 
-## Compiling
+## CPU implementation
+
+### Compiling
 
 First clone the repository and its submodules:
 
@@ -45,7 +49,7 @@ argument, e.g.:
 make OPTFLAGS=-funroll-loops
 ```
 
-## Tests
+### Testing
 
 TrackR has been numerically tested against two Python reference implementations
 [here](https://github.com/dpohanlon/IPU4HEP/blob/master/kalman_filter_python/kf2d.py)
@@ -66,7 +70,7 @@ If the output agrees you should then see:
 Hooray, test passed!
 ```
 
-## Benchmarks
+### Benchmarks
 
 Benchmarks can be run using `trackr_benchmark`, e.g.:
 
@@ -242,6 +246,8 @@ unoptimised matrix operations. There should be plenty of scope for improving
 performance by vectorising these. (Note that the codelet is compiled with `-O3`
 optimisations, however.)
 
+### Compiling
+
 The IPU code can be compiled using:
 
 ```
@@ -251,6 +257,8 @@ make ipu
 (Note that paths to the Poplar SDK are currently hardcoded, so would need to
 be adjusted for your particular setup. Our version of the SDK is also compiled
 using the old CXX11 ABI.)
+
+### Testing
 
 To test the IPU implementation, run:
 
@@ -267,6 +275,8 @@ Hooray, test passed!
 Note that the test uses a single vertex, i.e. the test tracks are batched and
 run in serial. We have also validated that the test passes when parallelising
 over tiles using a single track per tile.
+
+### Benchmarks
 
 The IPU implementation can be benchmarked using using `trackr_benchmark_ipu`, e.g.:
 
@@ -368,6 +378,8 @@ the performance drops to around 1.6 million tracks per second. Having removed
 all additional compiler flags passed to `graph.addCodelets`, it appears that the
 default optimisation level is `-O2`, hence the original code _should_ have been
 compiled with this level of optimisation enabled.
+
+#### Hardware threads
 
 Each IPU tile has 6 hardware worker threads that run in a time-sliced fashion.
 By scheduling multile vertices on the same tile within the same compute set, we
