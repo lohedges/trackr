@@ -21,27 +21,28 @@
 using InputFloat = poplar::Vector<poplar::Input<poplar::Vector<float>>>;
 using InOutFloat = poplar::Vector<poplar::InOut<poplar::Vector<float>>>;
 
-// Unoptimised helper functions prototypes.
+// Helper functions prototypes.
 
-// Copy the tensor 'in' into 'out'. The offsets allow us to specify the row
+// Copy 'in' into 'out'. The offsets allow us to specify the row
 // index at which we begin reading or writing in the respective tensor.
 void copy(InputFloat &in, InOutFloat &out, int offset_in, int offset_out);
 void copy(InOutFloat &in, InOutFloat &out, int offset_in, int offset_out);
 
-// Sum tensors 'in0' and 'in1', placing the result in 'out'.
+// Sum 'in0' and 'in1', placing the result in 'out'.
 void sum(InputFloat &in0, InOutFloat &in1, InOutFloat &out);
 void sum(InOutFloat &in0, InOutFloat &in1, InOutFloat &out);
 
-// Subtract tensors 'in0' and 'in1', placing the result in 'out'.
+// Subtract 'in0' and 'in1', placing the result in 'out'.
 void sub(InputFloat &in0, InOutFloat &in1, InOutFloat &out);
 void sub(InOutFloat &in0, InOutFloat &in1, InOutFloat &out);
 
-// Multiply matrices 'in0' and 'in1', placing the result in 'out'.
+// Multiply 'in0' and 'in1', placing the result in 'out'.
 void mul(InputFloat &in0, InOutFloat &in1, InOutFloat &out);
 void mul(InOutFloat &in0, InputFloat &in1, InOutFloat &out);
 void mul(InOutFloat &in0, InOutFloat &in1, InOutFloat &out);
 
-// Compute the inverse of matrix 'in', placing the result in 'out'.
+// Compute the inverse of 'in', placing the result in 'out'.
+// (Here 'in' is always a 4x4 matrix.)
 void inverse(InputFloat &in, InOutFloat &out);
 void inverse(InOutFloat &in, InOutFloat &out);
 
@@ -156,7 +157,7 @@ public:
 };
 
 
-// Unoptimised helper functions definitions.
+// Helper functions definitions. (Note that these are currently unoptimised.)
 
 void copy(InputFloat &in, InOutFloat &out, int offset_in, int offset_out)
 {
