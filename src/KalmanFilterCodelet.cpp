@@ -52,7 +52,7 @@ class KalmanFilter : public poplar::Vertex
 {
 public:
     // Input fields. (constant)
-    InputFloat p0;              // Intial state.
+    InputFloat p0;              // Intial state. (Planes every 4 rows, hits along cols.)
     InputFloat F;               // Transfer matrix.
     InputFloat FT;              // Transpose of transfer matrix.
     InputFloat C0;              // Covariance matrix.
@@ -60,7 +60,7 @@ public:
     InputFloat HTGH;            // (H^T)*G*H
 
     // InOut fields. (read/writeable)
-    InOutFloat p;               // The state tensor.
+    InOutFloat p;               // The state tensor for hits on the current plane.
     InOutFloat m;               // Hits for the current plane.
     InOutFloat p_proj;          // The projected states for the current plane.
     InOutFloat p_projs;         // The projected states for all planes.
