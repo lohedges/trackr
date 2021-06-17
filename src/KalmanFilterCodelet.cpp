@@ -51,32 +51,32 @@ class KalmanFilter : public poplar::Vertex
 {
 public:
     // Input fields. (constant)
-    InputFloat p0;
-    InputFloat F;
-    InputFloat FT;
-    InputFloat C0;
-    InputFloat HTG;
-    InputFloat HTGH;
+    InputFloat p0;              // Intial state.
+    InputFloat F;               // Transfer matrix.
+    InputFloat FT;              // Transpose of transfer matrix.
+    InputFloat C0;              // Covariance matrix.
+    InputFloat HTG;             // H^T
+    InputFloat HTGH;            // (H^T)*G*H
 
     // InOut fields. (read/writeable)
-    InOutFloat p;
-    InOutFloat m;
-    InOutFloat p_proj;
-    InOutFloat p_projs;
-    InOutFloat p_filt;
-    InOutFloat p_filts;
-    InOutFloat p_smooth;
-    InOutFloat p_smooths;
-    InOutFloat C;
-    InOutFloat C_proj;
-    InOutFloat C_projs;
-    InOutFloat C_filt;
-    InOutFloat C_filts;
-    InOutFloat tmp_4x4_0;
-    InOutFloat tmp_4x4_1;
-    InOutFloat tmp_4x4_2;
-    InOutFloat tmp_4xN_0;
-    InOutFloat tmp_4xN_1;
+    InOutFloat p;               // The state tensor.
+    InOutFloat m;               // Hits for the current plane.
+    InOutFloat p_proj;          // The projected states for the current plane.
+    InOutFloat p_projs;         // The projected states for all planes.
+    InOutFloat p_filt;          // The filtered states for the current plane.
+    InOutFloat p_filts;         // The filtered states for all planes.
+    InOutFloat p_smooth;        // The smoothed states for the current plane.
+    InOutFloat p_smooths;       // The smoothed states for all planes.
+    InOutFloat C;               // The covariance matrix for the current plane.
+    InOutFloat C_proj;          // The projected covariance for the current plane.
+    InOutFloat C_projs;         // The projected covariance for all planes.
+    InOutFloat C_filt;          // The filtered covariance matrix for the current plane.
+    InOutFloat C_filts;         // The filtered covariance matrix for all planes.
+    InOutFloat tmp_4x4_0;       // A temporary 4x4 tensor.
+    InOutFloat tmp_4x4_1;       // A temporary 4x4 tensor.
+    InOutFloat tmp_4x4_2;       // A temporary 4x4 tensor.
+    InOutFloat tmp_4xN_0;       // A temporary 4xN tensor.
+    InOutFloat tmp_4xN_1;       // A temporary 4xN tensor.
 
     // Overloaded compute function.
     bool compute()
