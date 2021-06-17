@@ -23,9 +23,8 @@ using InOutFloat = poplar::Vector<poplar::InOut<poplar::Vector<float>>>;
 
 // Unoptimised helper functions prototypes.
 
-// Copy a tensor 'in' into 'out'. The offsets allow us to specify the
-// starting row in the input and output tensor to begin reading and
-// writing.
+// Copy the tensor 'in' into 'out'. The offsets allow us to specify the row
+// index at which we begin reading or writing in the respective tensor.
 void copy(InputFloat &in, InOutFloat &out, int offset_in, int offset_out);
 void copy(InOutFloat &in, InOutFloat &out, int offset_in, int offset_out);
 
