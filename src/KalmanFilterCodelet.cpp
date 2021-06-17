@@ -17,7 +17,7 @@
 
 #include <poplar/Vertex.hpp>
 
-// Handy typedefs.
+// Handy typedefs for input and in-out types. (These are rank-2 tensors.)
 using InputFloat = poplar::Vector<poplar::Input<poplar::Vector<float>>>;
 using InOutFloat = poplar::Vector<poplar::InOut<poplar::Vector<float>>>;
 
