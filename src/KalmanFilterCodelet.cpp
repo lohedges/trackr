@@ -55,7 +55,7 @@ public:
     InputFloat F;               // Transfer matrix.
     InputFloat FT;              // Transpose of transfer matrix.
     InputFloat C0;              // Covariance matrix.
-    InputFloat HTG;             // H^T
+    InputFloat HTG;             // (H^T)*G
     InputFloat HTGH;            // (H^T)*G*H
 
     // InOut fields. (read/writeable)
