@@ -271,6 +271,8 @@ void mul(InOutFloat &in0, InOutFloat &in1, InOutFloat &out)
 
 void inverse(InputFloat &in, InOutFloat &out)
 {
+    // Adapted from: https://stackoverflow.com/a/60374938
+
     float A2323 = in[2][2] * in[3][3] - in[2][3] * in[3][2];
     float A1323 = in[2][1] * in[3][3] - in[2][3] * in[3][1];
     float A1223 = in[2][1] * in[3][2] - in[2][2] * in[3][1];
@@ -317,6 +319,8 @@ void inverse(InputFloat &in, InOutFloat &out)
 
 void inverse(InOutFloat &in, InOutFloat &out)
 {
+    // Adapted from: https://stackoverflow.com/a/60374938
+
     float A2323 = in[2][2] * in[3][3] - in[2][3] * in[3][2];
     float A1323 = in[2][1] * in[3][3] - in[2][3] * in[3][1];
     float A1223 = in[2][1] * in[3][2] - in[2][2] * in[3][1];
