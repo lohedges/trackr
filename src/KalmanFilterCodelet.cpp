@@ -156,7 +156,7 @@ public:
 };
 
 
-// Unoptimised helper functions declarations.
+// Unoptimised helper functions definitions.
 
 void copy(InputFloat &in, InOutFloat &out, int offset_in, int offset_out)
 {
