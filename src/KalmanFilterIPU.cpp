@@ -18,6 +18,7 @@
 #include <chrono>
 #include <cmath>
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 #include "KalmanFilterIPU.h"
@@ -106,7 +107,9 @@ KalmanFilterIPU::KalmanFilterIPU(
     this->setupGraphProgram();
 }
 
-std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute(double &secs, bool warmup)
+std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute(double &secs,
+                                                       bool warmup,
+                                                       bool profile)
 {
     // Initialise the Poplar engine and load the IPU device.
     poplar::Engine engine(this->graph, this->prog);
@@ -128,6 +131,15 @@ std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute(double &secs, bool warmup
 
     // Calculate run time in seconds..
     secs = std::chrono::duration<double>(elapsed).count();
+
+    // Write profiling information to file.
+    if (profile)
+    {
+        std::ofstream profile;
+        profile.open("profile.txt");
+        engine.printProfileSummary(profile, {{"showExecutionSteps", "true"}});
+        profile.close();
+    }
 
     std::vector<MatrixRowMajorXf> p_smoothed;
     if (this->num_tiles == 1)

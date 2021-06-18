@@ -72,10 +72,15 @@ public:
         \param warmup
             Whether to perform a "warmup" run. This is useful when benchmarking.
 
+        \param profile
+            Whether to write profiling information to file.
+
         \return smoothed_hits
             The reconstructed and smoothed hits at each detector plane.
      */
-    std::vector<MatrixRowMajorXf> execute(double&, bool warmup=false);
+    std::vector<MatrixRowMajorXf> execute(double&,
+                                          bool warmup=false,
+                                          bool profile=false);
 
 private:
     /// The vector of track hits.

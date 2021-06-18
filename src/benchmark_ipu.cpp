@@ -18,6 +18,7 @@
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
+#include <sstream>
 #include <string>
 
 #include "KalmanFilterIPU.h"
@@ -44,6 +45,7 @@ int main(int argc, char *argv[])
     int   seed = 42;
     int   num_repeats = 100;
     int   num_hits;
+    bool  profile = false;
 
     // Get the number of tiles from the command-line.
     if (argc > 1)
@@ -114,6 +116,17 @@ int main(int argc, char *argv[])
             std::cerr << "Number out of range: " << arg << '\n';
         }
     }
+    // Get the profiling flag from the command-line.
+    if (argc > 4)
+    {
+        std::stringstream ss(argv[4]);
+
+        if (!(ss >> std::boolalpha >> profile))
+        {
+            std::cerr << "Invalid profiling flag: options are 'true' or 'false'\n";
+            exit(-1);
+        }
+    }
 
     // Work out the number of hits.
     num_hits = num_tiles * hits_per_tile;
@@ -156,7 +169,7 @@ int main(int argc, char *argv[])
 
         // Execute the Kalman filter and return the smoothed hits at each plane,
         // performing a "warmup" run prior to timing the benchmark.
-        auto smoothed_hits = kalmanFilter.execute(secs, true);
+        auto smoothed_hits = kalmanFilter.execute(secs, true, profile);
 
         double throughput = (num_hits / secs) / 1e6;
         throughput_sum += throughput;
