@@ -18,33 +18,32 @@
 #include <poplar/Vertex.hpp>
 
 // Handy typedefs for Poplar Input and InOut types. (These are rank-2 tensors.)
-using InputFloat = poplar::Vector<poplar::Input<poplar::Vector<float>>>;
-using InOutFloat = poplar::Vector<poplar::InOut<poplar::Vector<float>>>;
+using InputFloatTensor = poplar::Vector<poplar::Input<poplar::Vector<float>>>;
+using InOutFloatTensor = poplar::Vector<poplar::InOut<poplar::Vector<float>>>;
 
-// Helper functions prototypes.
+// Templated helper functions prototypes.
 
 // Copy 'in' into 'out'. The offsets allow us to specify the row
 // index at which we begin reading or writing in the respective tensor.
-void copy(InputFloat &in, InOutFloat &out, int offset_in, int offset_out);
-void copy(InOutFloat &in, InOutFloat &out, int offset_in, int offset_out);
+template <typename T0, typename T1>
+void copy(T0 &in, T1 &out, int offset_in, int offset_out);
 
 // Sum 'in0' and 'in1', placing the result in 'out'.
-void sum(InputFloat &in0, InOutFloat &in1, InOutFloat &out);
-void sum(InOutFloat &in0, InOutFloat &in1, InOutFloat &out);
+template <typename T0, typename T1>
+void sum(T0 &in0, T1 &in1, InOutFloatTensor &out);
 
 // Subtract 'in0' and 'in1', placing the result in 'out'.
-void sub(InputFloat &in0, InOutFloat &in1, InOutFloat &out);
-void sub(InOutFloat &in0, InOutFloat &in1, InOutFloat &out);
+template <typename T0, typename T1>
+void sub(T0 &in0, T1 &in1, InOutFloatTensor &out);
 
 // Multiply 'in0' and 'in1', placing the result in 'out'.
-void mul(InputFloat &in0, InOutFloat &in1, InOutFloat &out);
-void mul(InOutFloat &in0, InputFloat &in1, InOutFloat &out);
-void mul(InOutFloat &in0, InOutFloat &in1, InOutFloat &out);
+template <typename T0, typename T1>
+void mul(T0 &in0, T1 &in1, InOutFloatTensor &out);
 
 // Compute the inverse of 'in', placing the result in 'out'.
 // (Here 'in' is always a 4x4 matrix.)
-void inverse(InputFloat &in, InOutFloat &out);
-void inverse(InOutFloat &in, InOutFloat &out);
+template <typename T0, typename T1>
+void inverse(T0 &in, T1 &out);
 
 // Kalman Filter Codelet.
 
@@ -52,32 +51,32 @@ class KalmanFilter : public poplar::Vertex
 {
 public:
     // Input fields. (constant)
-    InputFloat p0;              // Intial state. (Planes every 4 rows, hits along cols.)
-    InputFloat F;               // Transfer matrix.
-    InputFloat FT;              // Transpose of transfer matrix.
-    InputFloat C0;              // Covariance matrix.
-    InputFloat HTG;             // (H^T)*G
-    InputFloat HTGH;            // (H^T)*G*H
+    InputFloatTensor p0;              // Intial state. (Planes every 4 rows, hits along cols.)
+    InputFloatTensor F;               // Transfer matrix.
+    InputFloatTensor FT;              // Transpose of transfer matrix.
+    InputFloatTensor C0;              // Covariance matrix.
+    InputFloatTensor HTG;             // (H^T)*G
+    InputFloatTensor HTGH;            // (H^T)*G*H
 
     // InOut fields. (read/writeable)
-    InOutFloat p;               // The state tensor for hits on the current plane.
-    InOutFloat m;               // Hits for the current plane.
-    InOutFloat p_proj;          // The projected states for the current plane.
-    InOutFloat p_projs;         // The projected states for all planes.
-    InOutFloat p_filt;          // The filtered states for the current plane.
-    InOutFloat p_filts;         // The filtered states for all planes.
-    InOutFloat p_smooth;        // The smoothed states for the current plane.
-    InOutFloat p_smooths;       // The smoothed states for all planes.
-    InOutFloat C;               // The covariance matrix for the current plane.
-    InOutFloat C_proj;          // The projected covariance for the current plane.
-    InOutFloat C_projs;         // The projected covariance for all planes.
-    InOutFloat C_filt;          // The filtered covariance matrix for the current plane.
-    InOutFloat C_filts;         // The filtered covariance matrix for all planes.
-    InOutFloat tmp_4x4_0;       // A temporary 4x4 tensor.
-    InOutFloat tmp_4x4_1;       // A temporary 4x4 tensor.
-    InOutFloat tmp_4x4_2;       // A temporary 4x4 tensor.
-    InOutFloat tmp_4xN_0;       // A temporary 4xN tensor.
-    InOutFloat tmp_4xN_1;       // A temporary 4xN tensor.
+    InOutFloatTensor p;               // The state tensor for hits on the current plane.
+    InOutFloatTensor m;               // Hits for the current plane.
+    InOutFloatTensor p_proj;          // The projected states for the current plane.
+    InOutFloatTensor p_projs;         // The projected states for all planes.
+    InOutFloatTensor p_filt;          // The filtered states for the current plane.
+    InOutFloatTensor p_filts;         // The filtered states for all planes.
+    InOutFloatTensor p_smooth;        // The smoothed states for the current plane.
+    InOutFloatTensor p_smooths;       // The smoothed states for all planes.
+    InOutFloatTensor C;               // The covariance matrix for the current plane.
+    InOutFloatTensor C_proj;          // The projected covariance for the current plane.
+    InOutFloatTensor C_projs;         // The projected covariance for all planes.
+    InOutFloatTensor C_filt;          // The filtered covariance matrix for the current plane.
+    InOutFloatTensor C_filts;         // The filtered covariance matrix for all planes.
+    InOutFloatTensor tmp_4x4_0;       // A temporary 4x4 tensor.
+    InOutFloatTensor tmp_4x4_1;       // A temporary 4x4 tensor.
+    InOutFloatTensor tmp_4x4_2;       // A temporary 4x4 tensor.
+    InOutFloatTensor tmp_4xN_0;       // A temporary 4xN tensor.
+    InOutFloatTensor tmp_4xN_1;       // A temporary 4xN tensor.
 
     // Overloaded compute function.
     bool compute()
@@ -157,9 +156,11 @@ public:
 };
 
 
-// Helper functions definitions. (Note that these are currently unoptimised.)
+// Templated helper functions definitions.
+// (Note that these are currently unoptimised.)
 
-void copy(InputFloat &in, InOutFloat &out, int offset_in, int offset_out)
+template <typename T0, typename T1>
+void copy(T0 &in, T1 &out, int offset_in, int offset_out)
 {
     for (int i=0; i<4; ++i)
     {
@@ -170,18 +171,8 @@ void copy(InputFloat &in, InOutFloat &out, int offset_in, int offset_out)
     }
 }
 
-void copy(InOutFloat &in, InOutFloat &out, int offset_in, int offset_out)
-{
-    for (int i=0; i<4; ++i)
-    {
-        for (int j=0; j<in[i].size(); ++j)
-        {
-            out[i+offset_out][j] = in[i+offset_in][j];
-        }
-    }
-}
-
-void sum(InputFloat &in0, InOutFloat &in1, InOutFloat &out)
+template <typename T0, typename T1>
+void sum(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
     for (int i=0; i<4; ++i)
     {
@@ -192,18 +183,8 @@ void sum(InputFloat &in0, InOutFloat &in1, InOutFloat &out)
     }
 }
 
-void sum(InOutFloat &in0, InOutFloat &in1, InOutFloat &out)
-{
-    for (int i=0; i<4; ++i)
-    {
-        for (int j=0; j<in0[i].size(); ++j)
-        {
-            out[i][j] = in0[i][j] + in1[i][j];
-        }
-    }
-}
-
-void sub(InputFloat &in0, InOutFloat &in1, InOutFloat &out)
+template <typename T0, typename T1>
+void sub(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
     for (int i=0; i<4; ++i)
     {
@@ -214,18 +195,8 @@ void sub(InputFloat &in0, InOutFloat &in1, InOutFloat &out)
     }
 }
 
-void sub(InOutFloat &in0, InOutFloat &in1, InOutFloat &out)
-{
-    for (int i=0; i<4; ++i)
-    {
-        for (int j=0; j<in0[i].size(); ++j)
-        {
-            out[i][j] = in0[i][j] - in1[i][j];
-        }
-    }
-}
-
-void mul(InputFloat &in0, InOutFloat &in1, InOutFloat &out)
+template <typename T0, typename T1>
+void mul(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
     for (int i=0; i<4; ++i)
     {
@@ -240,85 +211,8 @@ void mul(InputFloat &in0, InOutFloat &in1, InOutFloat &out)
     }
 }
 
-void mul(InOutFloat &in0, InputFloat &in1, InOutFloat &out)
-{
-    for (int i=0; i<4; ++i)
-    {
-        for (int j=0; j<in1[0].size(); ++j)
-        {
-            out[i][j] = 0;
-            for (int k=0; k<4; ++k)
-            {
-                out[i][j] += in0[i][k] * in1[k][j];
-            }
-        }
-    }
-}
-
-void mul(InOutFloat &in0, InOutFloat &in1, InOutFloat &out)
-{
-    for (int i=0; i<4; ++i)
-    {
-        for (int j=0; j<in1[0].size(); ++j)
-        {
-            out[i][j] = 0;
-            for (int k=0; k<4; ++k)
-            {
-                out[i][j] += in0[i][k] * in1[k][j];
-            }
-        }
-    }
-}
-
-void inverse(InputFloat &in, InOutFloat &out)
-{
-    // Adapted from: https://stackoverflow.com/a/60374938
-
-    float A2323 = in[2][2] * in[3][3] - in[2][3] * in[3][2];
-    float A1323 = in[2][1] * in[3][3] - in[2][3] * in[3][1];
-    float A1223 = in[2][1] * in[3][2] - in[2][2] * in[3][1];
-    float A0323 = in[2][0] * in[3][3] - in[2][3] * in[3][0];
-    float A0223 = in[2][0] * in[3][2] - in[2][2] * in[3][0];
-    float A0123 = in[2][0] * in[3][1] - in[2][1] * in[3][0];
-    float A2313 = in[1][2] * in[3][3] - in[1][3] * in[3][2];
-    float A1313 = in[1][1] * in[3][3] - in[1][3] * in[3][1];
-    float A1213 = in[1][1] * in[3][2] - in[1][2] * in[3][1];
-    float A2312 = in[1][2] * in[2][3] - in[1][3] * in[2][2];
-    float A1312 = in[1][1] * in[2][3] - in[1][3] * in[2][1];
-    float A1212 = in[1][1] * in[2][2] - in[1][2] * in[2][1];
-    float A0313 = in[1][0] * in[3][3] - in[1][3] * in[3][0];
-    float A0213 = in[1][0] * in[3][2] - in[1][2] * in[3][0];
-    float A0312 = in[1][0] * in[2][3] - in[1][3] * in[2][0];
-    float A0212 = in[1][0] * in[2][2] - in[1][2] * in[2][0];
-    float A0113 = in[1][0] * in[3][1] - in[1][1] * in[3][0];
-    float A0112 = in[1][0] * in[2][1] - in[1][1] * in[2][0];
-
-    float det = in[0][0] * ( in[1][1] * A2323 - in[1][2] * A1323 + in[1][3] * A1223 )
-              - in[0][1] * ( in[1][0] * A2323 - in[1][2] * A0323 + in[1][3] * A0223 )
-              + in[0][2] * ( in[1][0] * A1323 - in[1][1] * A0323 + in[1][3] * A0123 )
-              - in[0][3] * ( in[1][0] * A1223 - in[1][1] * A0223 + in[1][2] * A0123 );
-
-    det = 1 / det;
-
-    out[0][0] = det *   ( in[1][1] * A2323 - in[1][2] * A1323 + in[1][3] * A1223 );
-    out[0][1] = det * - ( in[0][1] * A2323 - in[0][2] * A1323 + in[0][3] * A1223 );
-    out[0][2] = det *   ( in[0][1] * A2313 - in[0][2] * A1313 + in[0][3] * A1213 );
-    out[0][3] = det * - ( in[0][1] * A2312 - in[0][2] * A1312 + in[0][3] * A1212 );
-    out[1][0] = det * - ( in[1][0] * A2323 - in[1][2] * A0323 + in[1][3] * A0223 );
-    out[1][1] = det *   ( in[0][0] * A2323 - in[0][2] * A0323 + in[0][3] * A0223 );
-    out[1][2] = det * - ( in[0][0] * A2313 - in[0][2] * A0313 + in[0][3] * A0213 );
-    out[1][3] = det *   ( in[0][0] * A2312 - in[0][2] * A0312 + in[0][3] * A0212 );
-    out[2][0] = det *   ( in[1][0] * A1323 - in[1][1] * A0323 + in[1][3] * A0123 );
-    out[2][1] = det * - ( in[0][0] * A1323 - in[0][1] * A0323 + in[0][3] * A0123 );
-    out[2][2] = det *   ( in[0][0] * A1313 - in[0][1] * A0313 + in[0][3] * A0113 );
-    out[2][3] = det * - ( in[0][0] * A1312 - in[0][1] * A0312 + in[0][3] * A0112 );
-    out[3][0] = det * - ( in[1][0] * A1223 - in[1][1] * A0223 + in[1][2] * A0123 );
-    out[3][1] = det *   ( in[0][0] * A1223 - in[0][1] * A0223 + in[0][2] * A0123 );
-    out[3][2] = det * - ( in[0][0] * A1213 - in[0][1] * A0213 + in[0][2] * A0113 );
-    out[3][3] = det *   ( in[0][0] * A1212 - in[0][1] * A0212 + in[0][2] * A0112 );
-}
-
-void inverse(InOutFloat &in, InOutFloat &out)
+template <typename T0, typename T1>
+void inverse(T0 &in, T1 &out)
 {
     // Adapted from: https://stackoverflow.com/a/60374938
 
