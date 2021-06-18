@@ -411,3 +411,24 @@ Beyond approximately 400 tiles the performance increases linearly once more.
 (In particular, the 6-thread throughput for batches of 100 tracks actually
 dips below that of the single threaded code when using between approximately
 250 and 550 tiles.)
+
+#### Warm-up
+
+All benchmarks reported previously were run using a single instance of the graph
+compute engine, i.e. the IPU was run from cold. (We used 100 repeats, but each
+repeat is a single run.) However, a benchmarking paper (available from the
+Graphcore website
+[here](https://www.graphcore.ai/hubfs/assets/pdf/Citadel%20Securities%20Technical%20Report%20-%20Dissecting%20the%20Graphcore%20IPU%20Architecture%20via%20Microbenchmarking%20Dec%202019.pdf?hsLang=en))
+advocates the use of an untimed warm-up iteration of any benchmark prior to
+timing. This is used to exlude any warm-up overheads from the results,
+ensuring that steady-state measurements are achieved. The following figure
+shows a comparison between the _cold_ threaded benchmarks shown previously
+and those run once the system was _warm_.
+
+![Benchmarks IPU (threaded and warm).](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_ipu_threaded_warm.png)
+
+Following the warm-up run, the scaling of throughput versus tile number is near
+perfectly linear. In addition, run-to-run fluctuations are massively diminished,
+as seen in the size of the error bars. For the largest batch size of 400 tracks,
+the peak throughput when running on all 1216 tiles is now approximately 590
+million tracks per second.
