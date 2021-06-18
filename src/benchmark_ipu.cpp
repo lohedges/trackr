@@ -58,18 +58,18 @@ int main(int argc, char *argv[])
             num_tiles = std::stoi(arg, &pos);
             if (pos < arg.size())
             {
-                std::cerr << "Trailing characters after number: " << arg << '\n';
+                std::cerr << "Trailing characters after number of tiles: " << arg << '\n';
                 exit(-1);
             }
         }
         catch (std::invalid_argument const &ex)
         {
-            std::cerr << "Invalid number: " << arg << '\n';
+            std::cerr << "Invalid number of tiles: " << arg << '\n';
             exit(-1);
         }
         catch (std::out_of_range const &ex)
         {
-            std::cerr << "Number out of range: " << arg << '\n';
+            std::cerr << "Number of tiles out of range: " << arg << '\n';
             exit(-1);
         }
     }
@@ -84,18 +84,18 @@ int main(int argc, char *argv[])
             hits_per_tile = std::stoi(arg, &pos);
             if (pos < arg.size())
             {
-                std::cerr << "Trailing characters after number: " << arg << '\n';
+                std::cerr << "Trailing characters after number of hits per tile: " << arg << '\n';
                 exit(-1);
             }
         }
         catch (std::invalid_argument const &ex)
         {
-            std::cerr << "Invalid number: " << arg << '\n';
+            std::cerr << "Invalid number of hits per tile: " << arg << '\n';
             exit(-1);
         }
         catch (std::out_of_range const &ex)
         {
-            std::cerr << "Number out of range: " << arg << '\n';
+            std::cerr << "Number of hits per tile out of range: " << arg << '\n';
             exit(-1);
         }
     }
@@ -110,18 +110,18 @@ int main(int argc, char *argv[])
             num_repeats = std::stoi(arg, &pos);
             if (pos < arg.size())
             {
-                std::cerr << "Trailing characters after number: " << arg << '\n';
+                std::cerr << "Trailing characters after number of repeats: " << arg << '\n';
                 exit(-1);
             }
         }
         catch (std::invalid_argument const &ex)
         {
-            std::cerr << "Invalid number: " << arg << '\n';
+            std::cerr << "Invalid number of repeats: " << arg << '\n';
             exit(-1);
         }
         catch (std::out_of_range const &ex)
         {
-            std::cerr << "Number out of range: " << arg << '\n';
+            std::cerr << "Number of repeats out of range: " << arg << '\n';
             exit(-1);
         }
     }

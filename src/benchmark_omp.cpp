@@ -51,18 +51,18 @@ int main(int argc, char *argv[])
             num_hits = std::stoi(arg, &pos);
             if (pos < arg.size())
             {
-                std::cerr << "Trailing characters after number: " << arg << '\n';
+                std::cerr << "Trailing characters after number of hits: " << arg << '\n';
                 exit(-1);
             }
         }
         catch (std::invalid_argument const &ex)
         {
-            std::cerr << "Invalid number: " << arg << '\n';
+            std::cerr << "Invalid number of hits: " << arg << '\n';
             exit(-1);
         }
         catch (std::out_of_range const &ex)
         {
-            std::cerr << "Number out of range: " << arg << '\n';
+            std::cerr << "Number of hits out of range: " << arg << '\n';
             exit(-1);
         }
     }
@@ -77,18 +77,18 @@ int main(int argc, char *argv[])
             num_repeats = std::stoi(arg, &pos);
             if (pos < arg.size())
             {
-                std::cerr << "Trailing characters after number: " << arg << '\n';
+                std::cerr << "Trailing characters after number of repeats: " << arg << '\n';
                 exit(-1);
             }
         }
         catch (std::invalid_argument const &ex)
         {
-            std::cerr << "Invalid number: " << arg << '\n';
+            std::cerr << "Invalid number of repeats: " << arg << '\n';
             exit(-1);
         }
         catch (std::out_of_range const &ex)
         {
-            std::cerr << "Number out of range: " << arg << '\n';
+            std::cerr << "Number of repeats out of range: " << arg << '\n';
             exit(-1);
         }
     }
@@ -103,18 +103,18 @@ int main(int argc, char *argv[])
             num_batches = std::stoi(arg, &pos);
             if (pos < arg.size())
             {
-                std::cerr << "Trailing characters after number: " << arg << '\n';
+                std::cerr << "Trailing characters after number of batches: " << arg << '\n';
                 exit(-1);
             }
         }
         catch (std::invalid_argument const &ex)
         {
-            std::cerr << "Invalid number: " << arg << '\n';
+            std::cerr << "Invalid number of batches: " << arg << '\n';
             exit(-1);
         }
         catch (std::out_of_range const &ex)
         {
-            std::cerr << "Number out of range: " << arg << '\n';
+            std::cerr << "Number of batches out of range: " << arg << '\n';
             exit(-1);
         }
     }
