@@ -27,7 +27,6 @@
 #include <Eigen/StdVector>
 
 #include <poplar/DeviceManager.hpp>
-#include <poplar/IPUModel.hpp>
 
 /// Setup and connect to a Poplar IPU device.
 poplar::Device setIpuDevice();
