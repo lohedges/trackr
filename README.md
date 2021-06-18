@@ -432,3 +432,24 @@ perfectly linear. In addition, run-to-run fluctuations are massively diminished,
 as seen in the size of the error bars. For the largest batch size of 400 tracks,
 the peak throughput when running on all 1216 tiles is now approximately 590
 million tracks per second.
+
+#### Profiling
+
+The Poplar SDK comes with some excellent
+[profiling tools](https://github.com/graphcore/examples/tree/master/tutorials/poplar/tut4_profiling).
+To enable profile during benchmarking simply add `true` at the end of the
+command-line, e.g.:
+
+```
+./trackr_benchmark_ipu 256 100 100 true
+```
+
+This will write a profiling report to `profile.txt` in the current directory.
+Execution profiling can be enabled by setting appopriate entries in the
+`POPLAR_ENGINE_OPTIONS` environment variable, e.g.:
+
+```
+ POPLAR_ENGINE_OPTIONS='{"debug.instrumentCompute":"true", "debug.computeInstrumentationLevel":"tile"}'
+```
+
+Here `debug.computeInstrumentationLevel` can be one of `device`, `ipu`, or `tile`.
