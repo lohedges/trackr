@@ -52,15 +52,18 @@ int main(int argc, char *argv[])
             if (pos < arg.size())
             {
                 std::cerr << "Trailing characters after number: " << arg << '\n';
+                exit(-1);
             }
         }
         catch (std::invalid_argument const &ex)
         {
             std::cerr << "Invalid number: " << arg << '\n';
+            exit(-1);
         }
         catch (std::out_of_range const &ex)
         {
             std::cerr << "Number out of range: " << arg << '\n';
+            exit(-1);
         }
     }
     // Get the number of repeats from the command-line.
@@ -75,15 +78,18 @@ int main(int argc, char *argv[])
             if (pos < arg.size())
             {
                 std::cerr << "Trailing characters after number: " << arg << '\n';
+                exit(-1);
             }
         }
         catch (std::invalid_argument const &ex)
         {
             std::cerr << "Invalid number: " << arg << '\n';
+            exit(-1);
         }
         catch (std::out_of_range const &ex)
         {
             std::cerr << "Number out of range: " << arg << '\n';
+            exit(-1);
         }
     }
     // Get the number of batches from the command-line.
@@ -98,15 +104,18 @@ int main(int argc, char *argv[])
             if (pos < arg.size())
             {
                 std::cerr << "Trailing characters after number: " << arg << '\n';
+                exit(-1);
             }
         }
         catch (std::invalid_argument const &ex)
         {
             std::cerr << "Invalid number: " << arg << '\n';
+            exit(-1);
         }
         catch (std::out_of_range const &ex)
         {
             std::cerr << "Number out of range: " << arg << '\n';
+            exit(-1);
         }
     }
 
