@@ -177,7 +177,9 @@ int main(int argc, char *argv[])
         double secs;
 
         // Execute the Kalman filter and return the smoothed hits at each plane,
-        // performing a "warmup" run prior to timing the benchmark.
+        // performing a "warmup" run prior to timing the benchmark. Only profile
+        // the first repeat.
+        if (i > 0) profile = false;
         auto smoothed_hits = kalmanFilter.execute(secs, true, profile);
 
         double throughput = (num_hits / secs) / 1e6;
