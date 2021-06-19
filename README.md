@@ -1,6 +1,6 @@
 # TrackR
 
-Track reconstruction in C++ using a Kalman filter.Implemented with
+Track reconstruction in C++ using a Kalman filter. Implemented with
 [Eigen](https://eigen.tuxfamily.org) on the CPU and using the
 [Poplar SDK](https://www.graphcore.ai/products/poplar) on the
 [IPU](https://www.graphcore.ai).
