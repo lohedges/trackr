@@ -234,17 +234,17 @@ more cost efficient at present.
 ## IPU: Redux
 
 Starting from scratch, the IPU implementation has now be re-worked to consolidate
-all operations into a single codelet, i.e. the entire projection, filter, and
-smoothing stages of the Kalman filter. The codelet can operate on an arbitrary
-number of tracks in serial within a single vertex. (Within the memory limits
-of an IPU tile.) For efficient parallelisation, multiple batches of tracks can
-be processed by separate vertices that are mapped to different tiles, forming
-a _compute set_. Each vertex receives its own copy of the required Kalman
-matrices, with any constant terms in the equations pre-computed to avoid
-unnecessary operations. At present, the codelet uses a set of hand-rolled, and
-unoptimised matrix operations. There should be plenty of scope for improving
-performance by vectorising these. (Note that the codelet is compiled with `-O3`
-optimisations, however.)
+all operations into a single [codelet](https://github.com/lohedges/trackr/raw/main/src/KalmanFilterCodelet.cpp),
+i.e. the entire projection, filter, and smoothing stages of the Kalman filter.
+The codelet can operate on an arbitrary number of tracks in serial within a
+single vertex. (Within the memory limits of an IPU tile.) For efficient
+parallelisation, multiple batches of tracks can be processed by separate
+vertices that are mapped to different tiles, forming a _compute set_. Each
+vertex receives its own copy of the required Kalman matrices, with any constant
+terms in the equations pre-computed to avoid unnecessary operations. At present,
+the codelet uses a set of hand-rolled, and unoptimised matrix operations. There
+should be plenty of scope for improving performance by vectorising these. (Note
+that the codelet is compiled with `-O3` optimisations, however.)
 
 ### Compiling
 
