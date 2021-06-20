@@ -437,8 +437,8 @@ million tracks per second.
 
 The Poplar SDK comes with some excellent
 [profiling tools](https://github.com/graphcore/examples/tree/master/tutorials/poplar/tut4_profiling).
-To enable profile during benchmarking simply add `true` at the end of the
-command-line, e.g.:
+To enable profiling during benchmarking add `true` at the end of the command-line,
+e.g.:
 
 ```
 ./trackr_benchmark_ipu 256 100 100 true
