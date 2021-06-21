@@ -155,7 +155,6 @@ public:
     }
 };
 
-
 // Templated helper functions definitions.
 // (Note that these are currently unoptimised.)
 
