@@ -15,11 +15,32 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ipudef.h>
 #include <poplar/Vertex.hpp>
 
+// Byte alignment of input vectors.
+#define ALIGN  8
+
+// Loop uroll factor.
+#ifdef TEST
+    #define UNROLL 2
+#else
+    #define UNROLL 1
+#endif
+
 // Handy typedefs for Poplar Input and InOut types. (These are rank-2 tensors.)
-using InputFloatTensor = poplar::Vector<poplar::Input<poplar::Vector<float>>>;
-using InOutFloatTensor = poplar::Vector<poplar::InOut<poplar::Vector<float>>>;
+// We use the VectorLayout::SPAN so that we have access to the .size() member to
+// work out the input size dynamically. For a production run, with a fixed
+// number of tracks, we could instead use VectorLayout::ONE_PTR. See:
+// https://docs.graphcore.ai/projects/assembly-programming/en/latest/vertex_vectors.html
+using InputFloatTensor =
+    poplar::Vector< poplar::Input<
+    poplar::Vector< float, poplar::VectorLayout::SPAN, ALIGN>>,
+    poplar::VectorLayout::SPAN, ALIGN>;
+using InOutFloatTensor =
+    poplar::Vector< poplar::InOut<
+    poplar::Vector<float, poplar::VectorLayout::SPAN, ALIGN>>,
+    poplar::VectorLayout::SPAN, ALIGN>;
 
 // Templated helper functions prototypes.
 
@@ -27,14 +48,20 @@ using InOutFloatTensor = poplar::Vector<poplar::InOut<poplar::Vector<float>>>;
 // index at which we begin reading or writing in the respective tensor.
 template <typename T0, typename T1>
 void copy(T0 &in, T1 &out, int offset_in, int offset_out);
+template <typename T0, typename T1>
+void row_copy(const T0 *__restrict in, T1 *__restrict out, int size);
 
 // Sum 'in0' and 'in1', placing the result in 'out'.
 template <typename T0, typename T1>
 void sum(T0 &in0, T1 &in1, InOutFloatTensor &out);
+template <typename T0, typename T1>
+void row_sum(const T0 *__restrict in0, const T0 *__restrict in1, T1 *__restrict out, int size);
 
-// Subtract 'in1' from 'in0', placing the result in 'out'.
+// Subtract 'in0' and 'in1', placing the result in 'out'.
 template <typename T0, typename T1>
 void sub(T0 &in0, T1 &in1, InOutFloatTensor &out);
+template <typename T0, typename T1>
+void row_sub(const T0 *__restrict in0, const T0 *__restrict in1, T1 *__restrict out, int size);
 
 // Multiply 'in0' and 'in1', placing the result in 'out'.
 template <typename T0, typename T1>
@@ -161,45 +188,106 @@ public:
 template <typename T0, typename T1>
 void copy(T0 &in, T1 &out, int offset_in, int offset_out)
 {
+    // Work out the number of hits. (Each row has the same number of columns.)
+    // This must be a multiple of 8, which is validated elsewhere. We divide by
+    // two since we cast to float2, i.e. float2 contains two floats.
+    int size = in[0].size() / 2;
+
     for (int i=0; i<4; ++i)
     {
-        for (int j=0; j<in[i].size(); ++j)
-        {
-            out[i+offset_out][j] = in[i+offset_in][j];
-        }
+        // Cast to float2 to to instruct compiler to emit 64-bit wide,
+        // aligned instructions for 32-bit elements.
+        float2 *p_in = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in[i+offset_in][0]));
+        float2 *p_out = reinterpret_cast<float2 *>(&out[i+offset_out][0]);
+
+        // Process the row.
+        row_copy(p_in, p_out, size);
+    }
+}
+
+template <typename T0, typename T1>
+void row_copy(const T0 *__restrict in, T1 *__restrict out, int size)
+{
+    for (int i=0; i<size; i+=UNROLL)
+    {
+        #pragma unroll UNROLL
+        for (int j=0; j<UNROLL; ++j)
+            out[i*UNROLL + j] = in[i*UNROLL + j];
     }
 }
 
 template <typename T0, typename T1>
 void sum(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
+    // Work out the number of hits. (Each row has the same number of columns.)
+    // This must be a multiple of 8, which is validated elsewhere. We divide by
+    // two since we cast to float2, i.e. float2 contains two floats.
+    int size = in0[0].size() / 2;
+
     for (int i=0; i<4; ++i)
     {
-        for (int j=0; j<in0[i].size(); ++j)
-        {
-            out[i][j] = in0[i][j] + in1[i][j];
-        }
+        // Cast to float2 to to instruct compiler to emit 64-bit wide,
+        // aligned instructions for 32-bit elements.
+        float2 *p_in0 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in0[i][0]));
+        float2 *p_in1 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in1[i][0]));
+        float2 *p_out = reinterpret_cast<float2 *>(&out[i][0]);
+
+        // Process the row.
+        row_sum(p_in0, p_in1, p_out, size);
+    }
+}
+
+template <typename T0, typename T1>
+void row_sum(const T0 *__restrict in0, const T0 *__restrict in1, T1 *__restrict out, int size)
+{
+    for (int i=0; i<size; i+=UNROLL)
+    {
+        #pragma unroll UNROLL
+        for (int j=0; j<UNROLL; ++j)
+            out[i*UNROLL + j] = in0[i*UNROLL + j] + in1[i*UNROLL + j];
     }
 }
 
 template <typename T0, typename T1>
 void sub(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
+    // Work out the number of hits. (Each row has the same number of columns.)
+    // This must be a multiple of 8, which is validated elsewhere. We divide by
+    // two since we cast to float2, i.e. float2 contains two floats.
+    int size = in0[0].size() / 2;
+
     for (int i=0; i<4; ++i)
     {
-        for (int j=0; j<in0[i].size(); ++j)
-        {
-            out[i][j] = in0[i][j] - in1[i][j];
-        }
+        // Cast to float2 to to instruct compiler to emit 64-bit wide,
+        // aligned instructions for 32-bit elements.
+        float2 *p_in0 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in0[i][0]));
+        float2 *p_in1 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in1[i][0]));
+        float2 *p_out = reinterpret_cast<float2 *>(&out[i][0]);
+
+        // Process the row.
+        row_sub(p_in0, p_in1, p_out, size);
+    }
+}
+
+template <typename T0, typename T1>
+void row_sub(const T0 *__restrict in0, const T0 *__restrict in1, T1 *__restrict out, int size)
+{
+    for (int i=0; i<size; i+=UNROLL)
+    {
+        #pragma unroll UNROLL
+        for (int j=0; j<UNROLL; ++j)
+            out[i*UNROLL + j] = in0[i*UNROLL + j] - in1[i*UNROLL + j];
     }
 }
 
 template <typename T0, typename T1>
 void mul(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
+    int size = in1[0].size();
+
     for (int i=0; i<4; ++i)
     {
-        for (int j=0; j<in1[0].size(); ++j)
+        for (int j=0; j<size; ++j)
         {
             out[i][j] = 0;
             for (int k=0; k<4; ++k)
