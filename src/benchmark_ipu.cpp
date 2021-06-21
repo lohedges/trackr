@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     // Set model parameters. This will ultimately be read from file, or passed
     // on the command-line.
     int   num_tiles = 1;
-    int   hits_per_tile = 5;
+    int   hits_per_tile = 24;
     int   num_planes = 5;
     float distance = 1;
     float sigma = 10e-2;
@@ -135,6 +135,14 @@ int main(int argc, char *argv[])
             std::cerr << "Invalid profiling flag: options are 'true' or 'false'\n";
             exit(-1);
         }
+    }
+
+    // Make sure that the number of hits is a multiple of 6 and 8.
+    // (6 threads per CPU with 8 unrolled float2 loops per thread.)
+    if ((hits_per_tile % 6 != 0) or (hits_per_tile % 8 != 0))
+    {
+        std::cerr << "The number of hits per tile must be divisible by 6 and 8!\n";
+        exit(-1);
     }
 
     // Work out the number of hits.
