@@ -21,7 +21,7 @@
 // Byte alignment of input vectors.
 #define ALIGN  8
 
-// Loop uroll factor.
+// Loop unroll factor.
 #ifdef TEST
     #define UNROLL 2
 #else
