@@ -1,3 +1,4 @@
+# clang version 10.0.0
 #  Tiles	Tracks (per tile)	Throughput	Variance	Repeats
        2	              200	  0.792208	0.000000	    100
        4	              200	  1.585228	0.000002	    100
