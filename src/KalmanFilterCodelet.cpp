@@ -183,7 +183,6 @@ public:
 };
 
 // Templated helper functions definitions.
-// (Note that these are currently unoptimised.)
 
 template <typename T0, typename T1>
 void copy(T0 &in, T1 &out, int offset_in, int offset_out)
