@@ -453,3 +453,61 @@ Execution profiling can be enabled by setting appopriate entries in the
 ```
 
 Here `debug.computeInstrumentationLevel` can be one of `device`, `ipu`, or `tile`.
+
+#### Vectorisation (sort of)
+
+Following advice [here](https://www.graphcore.ai/hubfs/assets/pdf/Citadel%20Securities%20Technical%20Report%20-%20Dissecting%20the%20Graphcore%20IPU%20Architecture%20via%20Microbenchmarking%20Dec%202019.pdf?hsLang=en))
+and [here](https://github.com/thorbenlouw/BabelStream/blob/master/PoplarKernels.cpp)
+we have tried several approaches to encourage the `popc` compiler to
+vectorise the various matrix operations within the Kalman filter codelet.
+These approaches make use of aligned pointers and type aliasing, which is used
+to access the vertex fields via the vector type `float2`. This enables
+(theoretically) the compiler to emit 64-bit instructions for 32-bit values,
+i.e. allowing two `float` elements to be operated for a single `float2`, e.g.:
+
+```cpp
+class MyVertex : public poplar::Vertex
+{
+    // Some read/writeable field, request 8-byte alignment.
+    poplar::InputOut<Vector<float, poplar::VectorLayout::SPAN, 8>> in;
+
+    ...
+
+    bool compute()
+    {
+        // Cast to float2*.
+        float2 *f2in = reinterpret_cast<float2 *>(&in[0]);
+
+        ...
+```
+
+In addition, the `popc` compiler also supports the use of the `__restrict` type
+qualifier, meaning that we can specify that the pointer is not aliased, which
+should help the compiler to vectorise any loops over any arrays accessed via
+the pointer. The compiler also allows uses of `#pragma unroll` directives to
+indicate the appropriate unroll factor for any loop.
+
+Combining the above approaches the codelet helper functions were re-written to
+cast all tensor rows (track hits) to `float2 *` and pass these to sub
+functions to perform per-row operations (copies, additions, subtractions) in
+an unrolled fashion. From the benchmarking paper linked to above, it would
+appear that an unroll factor of 8 would be most appropriate. With this in
+mind, the bechmark code was updated to require track numbers that are multiples
+of 6 and 8 only, i.e. divisible over the hardware threads on each IPU and
+possible to be unrolled by a factor of 8. The following plot shows a benchmark
+comparison of 400 tracks per tile following a warmup run, to 408 tracks per tile
+run in the _vectorised_ fashion.
+
+![Benchmarks IPU (threaded, warm, vectorised).](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_ipu_threaded_warm_vector.png)
+
+When running on all 1216 tiles of the IPU, the peak throughput now reaches
+approximately 890 million tracks per second.
+
+Breaking down the peformance contribution of the different vectorisation tricks
+gives some surprising results.
+
+* The use of `__restrict` makes no difference whatsover.
+* Loop unrolling slows the code (slightly), i.e. the optimum unroll factor is 1.
+* All of the performance gain seems to come from type aliasing and performing
+the matrix operations on a per-row basis. Aliasing as `float2 *` has a marginal
+benefit over `float *`.
