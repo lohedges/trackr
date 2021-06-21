@@ -511,3 +511,12 @@ gives some surprising results.
 * All of the performance gain seems to come from type aliasing and performing
 the matrix operations on a per-row basis. Aliasing as `float2 *` has a marginal
 benefit over `float *`.
+* Using an optimisation level of `-O3` now gives marginally better performance
+than `-O2`.
+
+Updated IPU/CPU performance comparison:
+
+| **Device**    | **Throughput per watt** | **Throughput per dollar** |
+|---------------|-------------------------|---------------------------|
+| Graphcore GC2 | 74.17 x 10^5 tracks / s | 10.97 x 10^4 tracks / s   |
+| i7-9750H      |  5.77 x 10^5 tracks / s |  6.50 x 10^4 tracks / s   |
