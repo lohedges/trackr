@@ -56,13 +56,17 @@ public:
 
         \param sigma
             The resolution of the detector planes (in metres).
+
+        \param is_test
+            Whether this is a test run.
      */
      KalmanFilterIPU(poplar::Device device,
                      std::vector<MatrixRowMajorXf> hits,
                      int   num_tiles,
                      int   hits_per_tile,
                      float distance=1.0,
-                     float sigma=10e-2
+                     float sigma=10e-2,
+                     bool  is_test=false
                     );
 
     //! Execute the Kalman filter.

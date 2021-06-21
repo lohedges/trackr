@@ -33,7 +33,8 @@ KalmanFilterIPU::KalmanFilterIPU(
         int   num_tiles,
         int   hits_per_tile,
         float distance,
-        float sigma) :
+        float sigma,
+        bool is_test) :
         hits(hits),
         num_tiles(num_tiles),
         hits_per_tile(hits_per_tile),
@@ -96,11 +97,14 @@ KalmanFilterIPU::KalmanFilterIPU(
                 0,         0,    sigma_sqd, 0,
                 0,         0,    0,         M_PI;
 
-    // Initalise the graph and apply codelets. Set optimisation level to -O2,
-    // which gives the best performance at present. (This is also the default
-    // optimisation level when no additional compiler flags are specified.)
+    // Initalise the graph and apply codelets. Set optimisation level to -O3,
+    // which gives the best performance at present. (The default when no
+    // additional compiler flags are specified is -O2.)
     poplar::Graph graph(this->device);
-    graph.addCodelets({"src/KalmanFilterCodelet.cpp"}, "-O2");
+    if (is_test)
+        graph.addCodelets({"src/KalmanFilterCodelet.cpp"}, "-O3 -DTEST");
+    else
+        graph.addCodelets({"src/KalmanFilterCodelet.cpp"}, "-O3");
     this->graph = std::move(graph);
 
     // Setup the graph program.
