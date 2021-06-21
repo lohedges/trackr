@@ -19,7 +19,7 @@
 #include <poplar/Vertex.hpp>
 
 // Byte alignment of input vectors.
-#define ALIGN  8
+#define ALIGN 8
 
 // Loop unroll factor.
 #ifdef TEST
@@ -34,11 +34,11 @@
 // number of tracks, we could instead use VectorLayout::ONE_PTR. See:
 // https://docs.graphcore.ai/projects/assembly-programming/en/latest/vertex_vectors.html
 using InputFloatTensor =
-    poplar::Vector< poplar::Input<
-    poplar::Vector< float, poplar::VectorLayout::SPAN, ALIGN>>,
+    poplar::Vector<poplar::Input<
+    poplar::Vector<float, poplar::VectorLayout::SPAN, ALIGN>>,
     poplar::VectorLayout::SPAN, ALIGN>;
 using InOutFloatTensor =
-    poplar::Vector< poplar::InOut<
+    poplar::Vector<poplar::InOut<
     poplar::Vector<float, poplar::VectorLayout::SPAN, ALIGN>>,
     poplar::VectorLayout::SPAN, ALIGN>;
 
