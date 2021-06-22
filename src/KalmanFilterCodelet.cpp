@@ -288,11 +288,10 @@ void mul(T0 &in0, T1 &in1, InOutFloatTensor &out)
     {
         for (int j=0; j<size; ++j)
         {
-            out[i][j] = 0;
-            for (int k=0; k<4; ++k)
-            {
-                out[i][j] += in0[i][k] * in1[k][j];
-            }
+            out[i][j] = in0[i][0] * in1[0][j]
+                      + in0[i][1] * in1[1][j]
+                      + in0[i][2] * in1[2][j]
+                      + in0[i][3] * in1[3][j];
         }
     }
 }
