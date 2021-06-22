@@ -460,7 +460,7 @@ Following advice [here](https://www.graphcore.ai/hubfs/assets/pdf/Citadel%20Secu
 and [here](https://github.com/thorbenlouw/BabelStream/blob/master/PoplarKernels.cpp)
 we have tried several approaches to encourage the `popc` compiler to
 vectorise the various matrix operations within the Kalman filter codelet.
-These approaches make use of aligned pointers and type aliasing, which is used
+These approaches make use of aligned pointers and type conversion, which is used
 to access the vertex fields via the vector type `float2`. This enables
 (theoretically) the compiler to emit 64-bit instructions for 32-bit values,
 i.e. allowing two `float` elements to be operated for a single `float2`, e.g.:
@@ -475,7 +475,7 @@ class MyVertex : public poplar::Vertex
 
     bool compute()
     {
-        // Cast to float2*.
+        // Reinterpret bit pattern as float2.
         float2 *f2in = reinterpret_cast<float2 *>(&in[0]);
 
         ...
@@ -546,10 +546,10 @@ gives some surprising results.
 * Loop unrolling generally slows the code (slightly), i.e. the optimum unroll
 factor is 1. However, manually unrolling the inner-most multiplication loop
 does produce a big performance gain.
-* Additional performance gain seem to come from type aliasing and performing
-the matrix operations on a per-row basis. Aliasing as `float2 *` has a marginal
-benefit over `float *`. (Or performing no aliasing and just operating on the
-original tensors row-by row.)
+* Additional performance gain seem to come from type conversion and performing
+the matrix operations on a per-row basis. Reinterpreting as `float2 *` has a
+marginal benefit over `float *`. (Or performing no conversion and just operating
+on the original tensors row-by row.)
 * Using an optimisation level of `-O3` now gives marginally better performance
 than `-O2`.
 
