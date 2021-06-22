@@ -547,7 +547,7 @@ gives some surprising results.
 * Loop unrolling generally slows the code (slightly), i.e. the optimum unroll
 factor is 1. However, manually unrolling the inner-most multiplication loop
 does produce a big performance gain.
-* Additional performance gain seem to come from type conversion and performing
+* Additional performance gains seem to come from type conversion and performing
 the matrix operations on a per-row basis. Reinterpreting as `float2 *` has a
 marginal benefit over `float *`. (Or performing no conversion and just operating
 on the original tensors row-by row.)
