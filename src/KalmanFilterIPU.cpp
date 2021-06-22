@@ -155,9 +155,7 @@ std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute(double &secs,
 
         // Split the hits by plane. (For consistency with the CPU code.)
         for (int i=0; i<this->num_planes; ++i)
-        {
-            p_smoothed.push_back(p_smooths.block(4*i, 0, 4, this->num_hits));
-        }
+            p_smoothed.push_back(p_smooths.block(4*i, 0, 4, this->hits_per_tile));
     }
 
     return p_smoothed;
