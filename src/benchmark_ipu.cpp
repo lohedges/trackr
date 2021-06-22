@@ -15,6 +15,7 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
@@ -30,12 +31,13 @@
 #include <poplar/DeviceManager.hpp>
 
 /// Setup and connect to a Poplar IPU device.
-poplar::Device setIpuDevice();
+poplar::Device setIpuDevice(int);
 
 int main(int argc, char *argv[])
 {
     // Set model parameters. This will ultimately be read from file, or passed
     // on the command-line.
+    int   num_ipus = 1;
     int   num_tiles = 1;
     int   hits_per_tile = 24;
     int   num_planes = 5;
@@ -72,6 +74,16 @@ int main(int argc, char *argv[])
             std::cerr << "Number of tiles out of range: " << arg << '\n';
             exit(-1);
         }
+
+        // Make sure tile number is valid. We have 2 IPUs, each with 1216 tiles.
+        if (num_tiles > 2432)
+        {
+            std::cerr << "Number of tiles must be <= 2432.\n";
+            exit(-1);
+        }
+
+        // Work out the number of IPUs that are required.
+        num_ipus = std::ceil(num_tiles / 1216);
     }
     // Get the number of hits-per-tile from the command-line.
     if (argc > 2)
@@ -137,14 +149,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    // Make sure that the number of hits is a multiple of 6 and 8.
-    // (6 threads per CPU with 8 unrolled float2 loops per thread.)
-    if ((hits_per_tile % 6 != 0) or (hits_per_tile % 8 != 0))
-    {
-        std::cerr << "The number of hits per tile must be divisible by 6 and 8!\n";
-        exit(-1);
-    }
-
     // Work out the number of hits.
     num_hits = num_tiles * hits_per_tile;
 
@@ -171,7 +175,7 @@ int main(int argc, char *argv[])
             hits[j] = trackGenerator.generateTrack().first;
 
         // Setup the IPU device handle.
-        auto device = setIpuDevice();
+        auto device = setIpuDevice(num_ipus);
 
         // Initalise the Kalman filter.
         KalmanFilterIPU kalmanFilter(std::move(device),
@@ -218,10 +222,10 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-poplar::Device setIpuDevice()
+poplar::Device setIpuDevice(int num_ipus)
 {
     auto dm = poplar::DeviceManager::createDeviceManager();
-    auto hwDevices = dm.getDevices(poplar::TargetType::IPU, 1);
+    auto hwDevices = dm.getDevices(poplar::TargetType::IPU, num_ipus);
     if (hwDevices.size() > 0)
     {
         for (auto &d : hwDevices)

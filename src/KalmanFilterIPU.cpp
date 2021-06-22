@@ -43,6 +43,18 @@ KalmanFilterIPU::KalmanFilterIPU(
         device(std::move(device)),
         graph(this->device)
 {
+    // Work out the number of hardware threads per-tile.
+    auto num_workers = this->device.getTarget().getNumWorkerContexts();
+
+    // Make sure that the number of hits is a multiple of num_workers and 8.
+    // (num_workers threads per tile with 8 unrolled float2 loops per thread.)
+    if ((hits_per_tile % num_workers != 0) or (hits_per_tile % 8 != 0))
+    {
+        std::cerr << "The number of hits per tile must be divisible by "
+                  << num_workers << " and 8!\n";
+        exit(-1);
+    }
+
     // Store the number of hits and the number of detector planes.
     this->num_hits = hits.size();
     this->num_planes = hits[0].rows();
@@ -204,14 +216,17 @@ void KalmanFilterIPU::setupGraphProgram()
     // Tally counter for hits that have been processed so far.
     int hit_tally = 0;
 
+    // Work out the number of hardware threads per-tile.
+    auto num_workers = this->device.getTarget().getNumWorkerContexts();
+
     // Loop over the number of IPU tiles.
     for (int i=0; i<this->num_tiles; ++i)
     {
-        // Create 6 worker threads per tile. (Each tile has 6 hardware threads.)
-        for (int j=0; j<6; ++j)
+        // Create getNumWorkerContexts threads per tile.
+        for (int j=0; j<num_workers; ++j)
         {
             // Work out the number of hits per thread.
-            int hits_per_thread = int(this->hits_per_tile / 6);
+            int hits_per_thread = int(this->hits_per_tile / num_workers);
 
             // If this is the first thread, then batch any extra tracks from
             // the remainder of the division.
