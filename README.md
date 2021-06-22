@@ -494,23 +494,62 @@ an unrolled fashion. From the benchmarking paper linked to above, it would
 appear that an unroll factor of 8 would be most appropriate. With this in
 mind, the bechmark code was updated to require track numbers that are multiples
 of 6 and 8 only, i.e. divisible over the hardware threads on each IPU and
-possible to be unrolled by a factor of 8. The following plot shows a benchmark
-comparison of 400 tracks per tile following a warmup run, to 408 tracks per tile
-run in the _vectorised_ fashion.
+possible to be unrolled by a factor of 8.
+
+The multiplication function poses a problem for vectorisation since both
+tensors have the same storage order. Since its not possible to easily
+transpose one of them on the vertex, we apply a manual optimisation by
+completely unrolling the inner-most loop, which is of fixed size, i.e.:
+
+```cpp
+
+for (int i=0; i<4; ++i)
+{
+    for (int j=0; j<size; ++j)
+    {
+        out[i][j] = in0[i][0] * in1[0][j];
+        for (int k=1; k<4; ++k)
+        {
+            out[i][j] += in0[i][k] * in1[k][j];
+        }
+    }
+}
+```
+
+becomes
+
+```cpp
+for (int i=0; i<4; ++i)
+{
+    for (int j=0; j<size; ++j)
+    {
+        out[i][j] = in0[i][0] * in1[0][j]
+                  + in0[i][1] * in1[1][j]
+                  + in0[i][2] * in1[2][j]
+                  + in0[i][3] * in1[3][j];
+    }
+}
+```
+
+The following plot shows a benchmark comparison of 400 tracks per tile following
+a warmup run, to 408 tracks per tile run in the _vectorised_ fashion.
 
 ![Benchmarks IPU (threaded, warm, vectorised).](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_ipu_threaded_warm_vector.png)
 
 When running on all 1216 tiles of the IPU, the peak throughput now reaches
-approximately 890 million tracks per second.
+approximately 1.15 billion tracks per second.
 
 Breaking down the peformance contribution of the different vectorisation tricks
 gives some surprising results.
 
 * The use of `__restrict` makes no difference whatsover.
-* Loop unrolling slows the code (slightly), i.e. the optimum unroll factor is 1.
-* All of the performance gain seems to come from type aliasing and performing
+* Loop unrolling generally slows the code (slightly), i.e. the optimum unroll
+factor is 1. However, manually unrolling the inner-most multiplication loop
+does produce a big performance gain.
+* Additional performance gain seem to come from type aliasing and performing
 the matrix operations on a per-row basis. Aliasing as `float2 *` has a marginal
-benefit over `float *`.
+benefit over `float *`. (Or performing no aliasing and just operating on the
+original tensors row-by row.)
 * Using an optimisation level of `-O3` now gives marginally better performance
 than `-O2`.
 
@@ -518,5 +557,5 @@ Updated IPU/CPU performance comparison:
 
 | **Device**    | **Throughput per watt** | **Throughput per dollar** |
 |---------------|-------------------------|---------------------------|
-| Graphcore GC2 | 74.17 x 10^5 tracks / s | 10.97 x 10^4 tracks / s   |
+| Graphcore GC2 | 95.83 x 10^5 tracks / s | 14.18 x 10^4 tracks / s   |
 | i7-9750H      |  5.77 x 10^5 tracks / s |  6.50 x 10^4 tracks / s   |
