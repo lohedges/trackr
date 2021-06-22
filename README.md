@@ -560,3 +560,21 @@ Updated IPU/CPU performance comparison:
 |---------------|-------------------------|---------------------------|
 | Graphcore GC2 | 95.83 x 10^5 tracks / s | 14.18 x 10^4 tracks / s   |
 | i7-9750H      |  5.77 x 10^5 tracks / s |  6.50 x 10^4 tracks / s   |
+
+#### Multi-IPU benchmarks
+
+It is trivial to run the benchmark code on multi-IPU devices by simply selecting
+the required number of IPUs when connecting to available hardware devices, e.g.:
+
+```cpp
+int num_ipus = 2;
+auto dm = poplar::DeviceManager::createDeviceManager();
+auto hwDevices = dm.getDevices(poplar::TargetType::IPU, num_ipus);
+```
+
+This returns a "virtual-IPU", containing a multiple of the number of tiles
+per IPU, e.g. 2432 tiles when selecting 2 IPUs. Since the code is embarassingly
+parallel, scaling to more IPUs should produce a near-linear increase in
+performance. Benchmarking 408 tracks per tile using all 2432 tiles on 2 IPUs
+is found to give a throughput of approximately 2.3 billion tracks per second,
+i.e. twice the single IPU throughput.
