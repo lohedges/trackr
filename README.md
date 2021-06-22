@@ -445,14 +445,15 @@ e.g.:
 ```
 
 This will write a profiling report to `profile.txt` in the current directory.
-Execution profiling can be enabled by setting appopriate entries in the
-`POPLAR_ENGINE_OPTIONS` environment variable, e.g.:
+Sensible execution profiling options have been set, but can be adjusted by
+setting appopriate entries in the `POPLAR_ENGINE_OPTIONS` environment variable,
+e.g.:
 
 ```
  POPLAR_ENGINE_OPTIONS='{"debug.instrumentCompute":"true", "debug.computeInstrumentationLevel":"tile"}'
 ```
 
-Here `debug.computeInstrumentationLevel` can be one of `device`, `ipu`, or `tile`.
+(Here `debug.computeInstrumentationLevel` can be one of `device`, `ipu`, or `tile`.)
 
 #### Vectorisation (sort of)
 

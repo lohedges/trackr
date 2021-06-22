@@ -116,7 +116,28 @@ std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute(double &secs,
                                                        bool profile)
 {
     // Initialise the Poplar engine and load the IPU device.
-    poplar::Engine engine(this->graph, this->prog);
+
+    auto optionFlags = poplar::OptionFlags{};
+    if (profile)
+    {
+        // Taken from UoB-HPC IPU cookbook:
+        // https://github.com/UoB-HPC/ipu-hpc-cookbook
+        optionFlags = poplar::OptionFlags
+        {
+            {"target.saveArchive",                "archive.a"},
+            {"debug.instrument",                  "true"},
+            {"debug.instrumentCompute",           "true"},
+            {"debug.loweredVarDumpFile",          "vars.capnp"},
+            {"debug.instrumentControlFlow",       "true"},
+            {"debug.computeInstrumentationLevel", "tile"},
+            {"debug.outputAllSymbols",            "true"},
+            {"autoReport.all",                    "true"},
+            {"autoReport.outputSerializedGraph",  "true"},
+            {"debug.retainDebugInformation",      "true"}
+        };
+    }
+
+    poplar::Engine engine(this->graph, this->prog, optionFlags);
     engine.load(this->device);
 
     // Perform a warmup run.
