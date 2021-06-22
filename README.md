@@ -456,7 +456,7 @@ Here `debug.computeInstrumentationLevel` can be one of `device`, `ipu`, or `tile
 
 #### Vectorisation (sort of)
 
-Following advice [here](https://www.graphcore.ai/hubfs/assets/pdf/Citadel%20Securities%20Technical%20Report%20-%20Dissecting%20the%20Graphcore%20IPU%20Architecture%20via%20Microbenchmarking%20Dec%202019.pdf?hsLang=en))
+Following advice [here](https://www.graphcore.ai/hubfs/assets/pdf/Citadel%20Securities%20Technical%20Report%20-%20Dissecting%20the%20Graphcore%20IPU%20Architecture%20via%20Microbenchmarking%20Dec%202019.pdf?hsLang=en)
 and [here](https://github.com/thorbenlouw/BabelStream/blob/master/PoplarKernels.cpp)
 we have tried several approaches to encourage the `popc` compiler to
 vectorise the various matrix operations within the Kalman filter codelet.
