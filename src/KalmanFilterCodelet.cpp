@@ -194,7 +194,7 @@ void copy(T0 &in, T1 &out, int offset_in, int offset_out)
 
     for (int i=0; i<4; ++i)
     {
-        // Cast to float2 to to instruct compiler to emit 64-bit wide,
+        // Cast to float2 to instruct compiler to emit 64-bit wide,
         // aligned instructions for 32-bit elements.
         float2 *p_in = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in[i+offset_in][0]));
         float2 *p_out = reinterpret_cast<float2 *>(&out[i+offset_out][0]);
@@ -225,7 +225,7 @@ void sum(T0 &in0, T1 &in1, InOutFloatTensor &out)
 
     for (int i=0; i<4; ++i)
     {
-        // Cast to float2 to to instruct compiler to emit 64-bit wide,
+        // Cast to float2 to instruct compiler to emit 64-bit wide,
         // aligned instructions for 32-bit elements.
         float2 *p_in0 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in0[i][0]));
         float2 *p_in1 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in1[i][0]));
@@ -257,7 +257,7 @@ void sub(T0 &in0, T1 &in1, InOutFloatTensor &out)
 
     for (int i=0; i<4; ++i)
     {
-        // Cast to float2 to to instruct compiler to emit 64-bit wide,
+        // Cast to float2 to instruct compiler to emit 64-bit wide,
         // aligned instructions for 32-bit elements.
         float2 *p_in0 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in0[i][0]));
         float2 *p_in1 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in1[i][0]));
