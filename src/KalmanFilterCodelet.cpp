@@ -44,11 +44,10 @@ using InOutFloatTensor =
 
 // Templated helper functions prototypes.
 
-// Copy 'in' into 'out'. The offsets allow us to specify the row
-// index at which we begin reading or writing in the respective tensor.
-// The 'stride' option allows us to skip rows in the tensor containing
-// zero entries, i.e. the tan(theta) and tan(phi) terms of the initial
-// state.
+// Copy 'in' into 'out'. The offsets allow us to specify the row index at which
+// we begin reading or writing in the respective tensor. The 'stride' option
+// allows us to skip rows in the tensor where all elements are zero, i.e. the
+// tan(theta) and tan(phi) terms of the initial state.
 template <typename T0, typename T1>
 void copy(T0 &in, T1 &out, int offset_in, int offset_out, int stride=1);
 template <typename T0, typename T1>
