@@ -221,7 +221,7 @@ template <typename T0, typename T1>
 void fast_copy(T0 &in, T1 &out, int offset_in, int offset_out)
 {
     // Don't copy zero entries in the matrices. The following elements of
-    // 'in0' are always zero.
+    // 'in0' are always zero:
     //   (0,2), (0,3),
     //   (1,2), (1,3)
     //   (2,0), (2,1)
@@ -307,7 +307,7 @@ void mul(T0 &in0, T1 &in1, InOutFloatTensor &out)
     int size = in1[0].size();
 
     // Don't multiply zero entries in the matrices. The following elements of
-    // left-hand matrix 'in0' are always zero.
+    // left-hand matrix 'in0' are always zero:
     //   (0,2), (0,3),
     //   (1,2), (1,3)
     //   (2,0), (2,1)
@@ -337,7 +337,12 @@ template <typename T0, typename T1>
 void inverse(T0 &in, T1 &out)
 {
     // Adapted from: https://stackoverflow.com/a/60374938
-    // Remove zero terms to reduce operations.
+    // Remove zero terms to reduce operations. The following elements of 'in'
+    // are always zero:
+    //   (0,2), (0,3),
+    //   (1,2), (1,3)
+    //   (2,0), (2,1)
+    //   (3,0), (3,1)
 
     float A2323 = in[2][2] * in[3][3] - in[2][3] * in[3][2];
     float A1323 = in[2][1] * in[3][3] - in[2][3] * in[3][1];
