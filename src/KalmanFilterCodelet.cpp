@@ -50,6 +50,8 @@ template <typename T0, typename T1>
 void copy(T0 &in, T1 &out, int offset_in, int offset_out);
 template <typename T0, typename T1>
 void row_copy(const T0 *__restrict in, T1 *__restrict out, int size);
+template <typename T0, typename T1>
+void fast_copy(T0 &in, T1 &out, int offset_in, int offset_out);
 
 // Sum 'in0' and 'in1', placing the result in 'out'.
 template <typename T0, typename T1>
@@ -116,7 +118,7 @@ public:
         copy(p0, p, 0, 0);
 
         // Initialise the covariance matrix.
-        copy(C0, C, 0, 0);
+        fast_copy(C0, C, 0, 0);
 
         // Step forward through the planes to linearly project the state
         // and correct (filter) using the measured hits and covariance.
@@ -129,13 +131,13 @@ public:
             // C_proj = F * C * FT
             mul(F, C, tmp_4x4_0);
             mul(tmp_4x4_0, FT, C_proj);
-            copy(C_proj, C_projs, 0, i*4);
+            fast_copy(C_proj, C_projs, 0, i*4);
 
             // C_filt = (C_proj.inverse() + HTGH).inverse()
             inverse(C_proj, tmp_4x4_0);
             sum(HTGH, tmp_4x4_0, C_proj);
             inverse(C_proj, C_filt);
-            copy(C_filt, C_filts, 0, i*4);
+            fast_copy(C_filt, C_filts, 0, i*4);
 
             // tmp = (C_proj.inverse() * p_proj) + (HTG * m)
             copy(p0, m, i*4, 0);
@@ -151,7 +153,7 @@ public:
             copy(p_filt, p, 0, 0);
 
             // C = C_filt
-            copy(C_filt, C, 0, 0);
+            fast_copy(C_filt, C, 0, 0);
         }
 
         // Initialise the smmoothed hits for the final plane.
@@ -163,8 +165,8 @@ public:
         for (int i=num_planes-2; i>=0; --i)
         {
             // A = C_filts[i] * FT * C_projs[i+1].inverse()
-            copy(C_filts, C_filt, i*4, 0);
-            copy(C_projs, C_proj, (i+1)*4, 0);
+            fast_copy(C_filts, C_filt, i*4, 0);
+            fast_copy(C_projs, C_proj, (i+1)*4, 0);
             inverse(C_proj, tmp_4x4_1);
             mul(C_filt, FT, tmp_4x4_0);
             mul(tmp_4x4_0, tmp_4x4_1, tmp_4x4_2);
@@ -213,6 +215,26 @@ void row_copy(const T0 *__restrict in, T1 *__restrict out, int size)
         for (int j=0; j<UNROLL; ++j)
             out[i*UNROLL + j] = in[i*UNROLL + j];
     }
+}
+
+template <typename T0, typename T1>
+void fast_copy(T0 &in, T1 &out, int offset_in, int offset_out)
+{
+    // Don't copy zero entries in the matrices. The following elements of
+    // 'in0' are always zero.
+    //   (0,2), (0,3),
+    //   (1,2), (1,3)
+    //   (2,0), (2,1)
+    //   (3,0), (3,1)
+
+    out[ offset_out ][0] = in[ offset_in ][0];
+    out[ offset_out ][1] = in[ offset_in ][1];
+    out[1+offset_out][0] = in[1+offset_in][0];
+    out[1+offset_out][1] = in[1+offset_in][1];
+    out[2+offset_out][2] = in[2+offset_in][2];
+    out[2+offset_out][3] = in[2+offset_in][3];
+    out[3+offset_out][2] = in[3+offset_in][2];
+    out[3+offset_out][3] = in[3+offset_in][3];
 }
 
 template <typename T0, typename T1>
@@ -284,13 +306,28 @@ void mul(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
     int size = in1[0].size();
 
-    for (int i=0; i<4; ++i)
+    // Don't multiply zero entries in the matrices. The following elements of
+    // left-hand matrix 'in0' are always zero.
+    //   (0,2), (0,3),
+    //   (1,2), (1,3)
+    //   (2,0), (2,1)
+    //   (3,0), (3,1)
+
+    // Using two separate loops appears to produce the best optimisation.
+
+    for (int i=0; i<2; ++i)
     {
         for (int j=0; j<size; ++j)
         {
             out[i][j] = in0[i][0] * in1[0][j]
-                      + in0[i][1] * in1[1][j]
-                      + in0[i][2] * in1[2][j]
+                      + in0[i][1] * in1[1][j];
+        }
+    }
+    for (int i=2; i<4; ++i)
+    {
+        for (int j=0; j<size; ++j)
+        {
+            out[i][j] = in0[i][2] * in1[2][j]
                       + in0[i][3] * in1[3][j];
         }
     }
@@ -300,47 +337,43 @@ template <typename T0, typename T1>
 void inverse(T0 &in, T1 &out)
 {
     // Adapted from: https://stackoverflow.com/a/60374938
+    // Remove zero terms to reduce operations.
 
     float A2323 = in[2][2] * in[3][3] - in[2][3] * in[3][2];
     float A1323 = in[2][1] * in[3][3] - in[2][3] * in[3][1];
     float A1223 = in[2][1] * in[3][2] - in[2][2] * in[3][1];
-    float A0323 = in[2][0] * in[3][3] - in[2][3] * in[3][0];
-    float A0223 = in[2][0] * in[3][2] - in[2][2] * in[3][0];
-    float A0123 = in[2][0] * in[3][1] - in[2][1] * in[3][0];
     float A2313 = in[1][2] * in[3][3] - in[1][3] * in[3][2];
     float A1313 = in[1][1] * in[3][3] - in[1][3] * in[3][1];
     float A1213 = in[1][1] * in[3][2] - in[1][2] * in[3][1];
     float A2312 = in[1][2] * in[2][3] - in[1][3] * in[2][2];
     float A1312 = in[1][1] * in[2][3] - in[1][3] * in[2][1];
     float A1212 = in[1][1] * in[2][2] - in[1][2] * in[2][1];
-    float A0313 = in[1][0] * in[3][3] - in[1][3] * in[3][0];
-    float A0213 = in[1][0] * in[3][2] - in[1][2] * in[3][0];
-    float A0312 = in[1][0] * in[2][3] - in[1][3] * in[2][0];
-    float A0212 = in[1][0] * in[2][2] - in[1][2] * in[2][0];
-    float A0113 = in[1][0] * in[3][1] - in[1][1] * in[3][0];
-    float A0112 = in[1][0] * in[2][1] - in[1][1] * in[2][0];
+    float A0313 = in[1][0] * in[3][3];
+    float A0213 = in[1][0] * in[3][2];
+    float A0312 = in[1][0] * in[2][3];
+    float A0212 = in[1][0] * in[2][2];
+    float A0113 = in[1][0] * in[3][1];
+    float A0112 = in[1][0] * in[2][1];
 
     float det = in[0][0] * ( in[1][1] * A2323 - in[1][2] * A1323 + in[1][3] * A1223 )
-              - in[0][1] * ( in[1][0] * A2323 - in[1][2] * A0323 + in[1][3] * A0223 )
-              + in[0][2] * ( in[1][0] * A1323 - in[1][1] * A0323 + in[1][3] * A0123 )
-              - in[0][3] * ( in[1][0] * A1223 - in[1][1] * A0223 + in[1][2] * A0123 );
+              - in[0][1] * ( in[1][0] * A2323 );
 
     det = 1 / det;
 
     out[0][0] = det *   ( in[1][1] * A2323 - in[1][2] * A1323 + in[1][3] * A1223 );
-    out[0][1] = det * - ( in[0][1] * A2323 - in[0][2] * A1323 + in[0][3] * A1223 );
-    out[0][2] = det *   ( in[0][1] * A2313 - in[0][2] * A1313 + in[0][3] * A1213 );
-    out[0][3] = det * - ( in[0][1] * A2312 - in[0][2] * A1312 + in[0][3] * A1212 );
-    out[1][0] = det * - ( in[1][0] * A2323 - in[1][2] * A0323 + in[1][3] * A0223 );
-    out[1][1] = det *   ( in[0][0] * A2323 - in[0][2] * A0323 + in[0][3] * A0223 );
-    out[1][2] = det * - ( in[0][0] * A2313 - in[0][2] * A0313 + in[0][3] * A0213 );
-    out[1][3] = det *   ( in[0][0] * A2312 - in[0][2] * A0312 + in[0][3] * A0212 );
-    out[2][0] = det *   ( in[1][0] * A1323 - in[1][1] * A0323 + in[1][3] * A0123 );
-    out[2][1] = det * - ( in[0][0] * A1323 - in[0][1] * A0323 + in[0][3] * A0123 );
-    out[2][2] = det *   ( in[0][0] * A1313 - in[0][1] * A0313 + in[0][3] * A0113 );
-    out[2][3] = det * - ( in[0][0] * A1312 - in[0][1] * A0312 + in[0][3] * A0112 );
-    out[3][0] = det * - ( in[1][0] * A1223 - in[1][1] * A0223 + in[1][2] * A0123 );
-    out[3][1] = det *   ( in[0][0] * A1223 - in[0][1] * A0223 + in[0][2] * A0123 );
-    out[3][2] = det * - ( in[0][0] * A1213 - in[0][1] * A0213 + in[0][2] * A0113 );
-    out[3][3] = det *   ( in[0][0] * A1212 - in[0][1] * A0212 + in[0][2] * A0112 );
+    out[0][1] = det * - ( in[0][1] * A2323 );
+    out[0][2] = det *   ( in[0][1] * A2313 );
+    out[0][3] = det * - ( in[0][1] * A2312 );
+    out[1][0] = det * - ( in[1][0] * A2323 );
+    out[1][1] = det *   ( in[0][0] * A2323 );
+    out[1][2] = det * - ( in[0][0] * A2313 );
+    out[1][3] = det *   ( in[0][0] * A2312 );
+    out[2][0] = det *   ( in[1][0] * A1323 );
+    out[2][1] = det * - ( in[0][0] * A1323 );
+    out[2][2] = det *   ( in[0][0] * A1313 - in[0][1] * A0313 );
+    out[2][3] = det * - ( in[0][0] * A1312 - in[0][1] * A0312 );
+    out[3][0] = det * - ( in[1][0] * A1223 );
+    out[3][1] = det *   ( in[0][0] * A1223 );
+    out[3][2] = det * - ( in[0][0] * A1213 - in[0][1] * A0213 );
+    out[3][3] = det *   ( in[0][0] * A1212 - in[0][1] * A0212 );
 }
