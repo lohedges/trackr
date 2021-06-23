@@ -46,8 +46,11 @@ using InOutFloatTensor =
 
 // Copy 'in' into 'out'. The offsets allow us to specify the row
 // index at which we begin reading or writing in the respective tensor.
+// The 'stride' option allows us to skip rows in the tensor containing
+// zero entries, i.e. the tan(theta) and tan(phi) terms of the initial
+// state.
 template <typename T0, typename T1>
-void copy(T0 &in, T1 &out, int offset_in, int offset_out);
+void copy(T0 &in, T1 &out, int offset_in, int offset_out, int stride=1);
 template <typename T0, typename T1>
 void row_copy(const T0 *__restrict in, T1 *__restrict out, int size);
 template <typename T0, typename T1>
@@ -115,7 +118,7 @@ public:
         int num_planes = p0.size() / 4;
 
         // Copy the state vector for the first plane into p.
-        copy(p0, p, 0, 0);
+        copy(p0, p, 0, 0, 2);
 
         // Initialise the covariance matrix.
         fast_copy(C0, C, 0, 0);
@@ -140,7 +143,7 @@ public:
             fast_copy(C_filt, C_filts, 0, i*4);
 
             // tmp = (C_proj.inverse() * p_proj) + (HTG * m)
-            copy(p0, m, i*4, 0);
+            copy(p0, m, i*4, 0, 2);
             mul(tmp_4x4_0, p_proj, tmp_4xN_0);
             mul(HTG, m, tmp_4xN_1);
             sum(tmp_4xN_0, tmp_4xN_1, tmp_4xN_1);
@@ -187,14 +190,14 @@ public:
 // Templated helper functions definitions.
 
 template <typename T0, typename T1>
-void copy(T0 &in, T1 &out, int offset_in, int offset_out)
+void copy(T0 &in, T1 &out, int offset_in, int offset_out, int stride)
 {
     // Work out the number of hits. (Each row has the same number of columns.)
     // This must be a multiple of 8, which is validated elsewhere. We divide by
     // two since we cast to float2, i.e. float2 contains two floats.
     int size = in[0].size() / 2;
 
-    for (int i=0; i<4; ++i)
+    for (int i=0; i<4; i+=stride)
     {
         // Cast to float2 to instruct compiler to emit 64-bit wide,
         // aligned instructions for 32-bit elements.
