@@ -40,7 +40,6 @@ int main()
     int   num_planes = 5;
     float distance = 1;
     float sigma = 10e-2;
-    float theta0 = 1e-3;
 
     // Work out the number of hits.
     int num_hits = num_tiles * hits_per_tile;
@@ -94,7 +93,8 @@ int main()
                                  num_tiles,
                                  hits_per_tile,
                                  distance,
-                                 sigma);
+                                 sigma,
+                                 true);
 
     // Execute the Kalman filter and return the smoothed hits at each plane.
     double secs;

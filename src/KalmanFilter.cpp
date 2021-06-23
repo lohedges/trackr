@@ -33,9 +33,7 @@ KalmanFilter::KalmanFilter(
         std::vector<Eigen::MatrixXf> hits,
         float distance,
         float sigma) :
-        hits(hits),
-        distance(distance),
-        sigma(sigma)
+        hits(hits)
 {
     // Store the number of hits and the number of detector planes.
     this->num_hits = hits.size();

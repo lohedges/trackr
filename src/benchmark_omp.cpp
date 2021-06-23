@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
     float distance = 1;
     float sigma = 10e-2;
     float theta0 = 1e-3;
-    int   seed = 42;
     int   num_repeats = 100;
     int   num_batches = 1;
 

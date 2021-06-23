@@ -38,8 +38,6 @@ KalmanFilterIPU::KalmanFilterIPU(
         hits(hits),
         num_tiles(num_tiles),
         hits_per_tile(hits_per_tile),
-        distance(distance),
-        sigma(sigma),
         device(std::move(device)),
         graph(this->device)
 {
@@ -48,11 +46,14 @@ KalmanFilterIPU::KalmanFilterIPU(
 
     // Make sure that the number of hits is a multiple of num_workers and 8.
     // (num_workers threads per tile with 8 unrolled float2 loops per thread.)
-    if ((hits_per_tile % num_workers != 0) or (hits_per_tile % 8 != 0))
+    if (not is_test)
     {
-        std::cerr << "The number of hits per tile must be divisible by "
-                  << num_workers << " and 8!\n";
-        exit(-1);
+        if ((hits_per_tile % num_workers != 0) or (hits_per_tile % 8 != 0))
+        {
+            std::cerr << "The number of hits per tile must be divisible by "
+                      << num_workers << " and 8!\n";
+            exit(-1);
+        }
     }
 
     // Store the number of hits and the number of detector planes.

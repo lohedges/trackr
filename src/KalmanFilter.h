@@ -61,12 +61,6 @@ private:
     /// The number of track hits.
     int num_hits;
 
-    /// The distance between detector planes.
-    float distance;
-
-    /// The resolution of the detector planes.
-    float sigma;
-
     /// Transfer matrix. (Linear operator.)
     Eigen::Matrix4f F;
 

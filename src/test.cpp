@@ -33,7 +33,6 @@ int main()
     int   num_planes = 5;
     float distance = 1;
     float sigma = 10e-2;
-    float theta0 = 1e-3;
 
     // Initalise a vector to hold the tracks.
     std::vector<Eigen::MatrixXf> hits;
@@ -119,7 +118,7 @@ int main()
 
     // Assert that the smoothed tracks are the same.
     float delta = 1e-6;
-    for (int i=0; i<smoothed_hits.size(); ++i)
+    for (unsigned int i=0; i<smoothed_hits.size(); ++i)
     {
         auto a = smoothed_hits[i].reshaped();
         auto b = smoothed_hits_ref[i].reshaped();
