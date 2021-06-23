@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
         }
 
         // Work out the number of IPUs that are required.
-        num_ipus = std::ceil(num_tiles / 1216);
+        num_ipus = std::ceil(num_tiles / 1216.0);
     }
     // Get the number of hits-per-tile from the command-line.
     if (argc > 2)
