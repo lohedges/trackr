@@ -572,7 +572,7 @@ auto dm = poplar::DeviceManager::createDeviceManager();
 auto hwDevices = dm.getDevices(poplar::TargetType::IPU, num_ipus);
 ```
 
-This returns a "virtual-IPU", containing a multiple of the number of tiles
+This returns a _virtual_ IPU, containing a multiple of the number of tiles
 per IPU, e.g. 2432 tiles when selecting 2 IPUs. Since the code is embarassingly
 parallel, scaling to more IPUs should produce a near-linear increase in
 performance. Benchmarking 408 tracks per tile using all 2432 tiles on 2 IPUs
