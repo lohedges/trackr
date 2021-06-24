@@ -309,7 +309,7 @@ void mul(T0 &in0, T1 &in1, InOutFloatTensor &out)
     int size = in1[0].size();
 
     // Don't multiply zero entries in the matrices. The following elements of
-    // left-hand matrix 'in0' are always zero:
+    // the multiplicand, 'in0', are always zero:
     //   (0,2), (0,3),
     //   (1,2), (1,3)
     //   (2,0), (2,1)
