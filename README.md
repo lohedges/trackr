@@ -504,6 +504,9 @@ completely unrolling the inner-most loop, which is of fixed size, i.e.:
 
 ```cpp
 
+// All rows in 'in1' have same number of columns.
+int size = in1[0].size();
+
 for (int i=0; i<4; ++i)
 {
     for (int j=0; j<size; ++j)
@@ -520,6 +523,9 @@ for (int i=0; i<4; ++i)
 becomes
 
 ```cpp
+
+int size = in1[0].size();
+
 for (int i=0; i<4; ++i)
 {
     for (int j=0; j<size; ++j)
