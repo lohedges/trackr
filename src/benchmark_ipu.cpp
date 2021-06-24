@@ -75,13 +75,6 @@ int main(int argc, char *argv[])
             exit(-1);
         }
 
-        // Make sure tile number is valid. We have 2 IPUs, each with 1216 tiles.
-        if (num_tiles > 2432)
-        {
-            std::cerr << "Number of tiles must be <= 2432.\n";
-            exit(-1);
-        }
-
         // Attempt to create a single IPU device so that we can work
         // out the number of tiles per IPU.
         auto device = setIpuDevice(1);
@@ -243,6 +236,7 @@ poplar::Device setIpuDevice(int num_ipus)
         }
     }
 
-    std::cerr << "Unable to connect to IPU device!\n";
+    std::cerr << "Unable to connect to a device with " << num_ipus << " IPUs. ";
+    std::cerr << "Try reducing the requested number of tiles.\n";
     exit(-1);
 }
