@@ -630,8 +630,8 @@ for (int i=2; i<4; ++i)
 
 (Note that other terms in the multiplicand may be zero. The above is the
 easiest generalisation that avoids the need for separate code to handle
-different matrices. A minor performance improvement is seen when adding
-a specialised function for 4x4 matrix pairs where the inner loop is fully
+different matrices. A ~3% performance improvement is seen when adding a
+specialised function for 4x4 matrix pairs where the inner loop is fully
 unrolled.)
 
 The following plot shows benchmarks after applying these simple optimisations.
