@@ -588,3 +588,54 @@ parallel, scaling to more IPUs should produce a near-linear increase in
 performance. Benchmarking 408 tracks per tile using all 2432 tiles on 2 IPUs
 is found to give a throughput of approximately 2.3 billion tracks per second,
 i.e. twice the single IPU throughput.
+
+#### Manual optimisations
+
+As with any piece of numerical software, there is scope for performance gains
+by examining the equations that are modelled to remove redundant floating
+point operations. In this case, the Kalman matrices contain many zero terms
+that lead to wasted performance when performing matrix multiplications, sums,
+copies, inverses, etc. For example, in the absence of noise (as considered
+here), the multiplicand in any matrix multiplication always has zero entries
+in elements (0,2), (0,3), (1,2), (1,3), (2,0), and (2,1). As such, the
+multiplication code shown above can be further simplified to:
+
+```cpp
+int size = in1[0].size();
+
+// Using two separate loops appears to produce the best optimisation.
+
+for (int i=0; i<2; ++i)
+{
+    for (int j=0; j<size; ++j)
+    {
+        out[i][j] = in0[i][0] * in1[0][j]
+                  + in0[i][1] * in1[1][j];
+    }
+}
+for (int i=2; i<4; ++i)
+{
+    for (int j=0; j<size; ++j)
+    {
+        out[i][j] = in0[i][2] * in1[2][j]
+                  + in0[i][3] * in1[3][j];
+    }
+}
+```
+
+(Note that other terms in the multiplicand may be zero. The above is the
+easiest generalisation that avoids the need for separate code to handle
+different matrices.)
+
+The following plot shows benchmarks after applying these simple optimisations.
+
+![Benchmarks IPU (threaded, warm, vectorised, manual optimisations).](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmark_ipu_threaded_warm_vector_manual.png)
+
+The performance when running batches of 408 tracks on all 1216 tiles has now
+reached approximately 1.8 billion tracks per second.
+
+While the manual optimisations described here might not be appropriate for
+real world code, where the addition of noise would mean that the number of
+zero matrix terms is fewer, it highlights the benefit of thinking about the
+equations and reducing redundancy wherever possible. Here we achieved roughly
+40% increase in throughput for little effort.
