@@ -69,12 +69,14 @@ void row_sub(const T0 *__restrict in0, const T0 *__restrict in1, T1 *__restrict 
 
 // Multiply 'in0' and 'in1', placing the result in 'out'.
 template <typename T0, typename T1>
-void mul(T0 &in0, T1 &in1, InOutFloatTensor &out);
+void mul_4x4_4x4(T0 &in0, T1 &in1, InOutFloatTensor &out);
+template <typename T0, typename T1>
+void mul_4x4_4xN(T0 &in0, T1 &in1, InOutFloatTensor &out);
 
-// Compute the inverse of 'in', placing the result in 'out'.
+// Compute the inverse_4x4 of 'in', placing the result in 'out'.
 // (Here 'in' is always a 4x4 matrix.)
 template <typename T0, typename T1>
-void inverse(T0 &in, T1 &out);
+void inverse_4x4(T0 &in, T1 &out);
 
 // Kalman Filter Codelet.
 
@@ -127,28 +129,28 @@ public:
         for (int i=0; i<num_planes; ++i)
         {
             // p_proj = F * p
-            mul(F, p, p_proj);
+            mul_4x4_4xN(F, p, p_proj);
             copy(p_proj, p_projs, 0, i*4);
 
             // C_proj = F * C * FT
-            mul(F, C, tmp_4x4_0);
-            mul(tmp_4x4_0, FT, C_proj);
+            mul_4x4_4x4(F, C, tmp_4x4_0);
+            mul_4x4_4x4(tmp_4x4_0, FT, C_proj);
             fast_copy(C_proj, C_projs, 0, i*4);
 
-            // C_filt = (C_proj.inverse() + HTGH).inverse()
-            inverse(C_proj, tmp_4x4_0);
+            // C_filt = (C_proj.inverse_4x4() + HTGH).inverse()
+            inverse_4x4(C_proj, tmp_4x4_0);
             sum(HTGH, tmp_4x4_0, C_proj);
-            inverse(C_proj, C_filt);
+            inverse_4x4(C_proj, C_filt);
             fast_copy(C_filt, C_filts, 0, i*4);
 
-            // tmp = (C_proj.inverse() * p_proj) + (HTG * m)
+            // tmp = (C_proj.inverse_4x4() * p_proj) + (HTG * m)
             copy(p0, m, i*4, 0, 2);
-            mul(tmp_4x4_0, p_proj, tmp_4xN_0);
-            mul(HTG, m, tmp_4xN_1);
+            mul_4x4_4xN(tmp_4x4_0, p_proj, tmp_4xN_0);
+            mul_4x4_4xN(HTG, m, tmp_4xN_1);
             sum(tmp_4xN_0, tmp_4xN_1, tmp_4xN_1);
 
             // p_filt = C_filt * tmp
-            mul(C_filt, tmp_4xN_1, p_filt);
+            mul_4x4_4xN(C_filt, tmp_4xN_1, p_filt);
             copy(p_filt, p_filts, 0, i*4);
 
             // p = p_filt
@@ -166,18 +168,18 @@ public:
         // states to find the globally optimum configuration.
         for (int i=num_planes-2; i>=0; --i)
         {
-            // A = C_filts[i] * FT * C_projs[i+1].inverse()
+            // A = C_filts[i] * FT * C_projs[i+1].inverse_4x4()
             fast_copy(C_filts, C_filt, i*4, 0);
             fast_copy(C_projs, C_proj, (i+1)*4, 0);
-            inverse(C_proj, tmp_4x4_1);
-            mul(C_filt, FT, tmp_4x4_0);
-            mul(tmp_4x4_0, tmp_4x4_1, tmp_4x4_2);
+            inverse_4x4(C_proj, tmp_4x4_1);
+            mul_4x4_4x4(C_filt, FT, tmp_4x4_0);
+            mul_4x4_4x4(tmp_4x4_0, tmp_4x4_1, tmp_4x4_2);
 
             // p_smooth = p_filts[i] + A*(p_smoothed[i+1] - p_projs[i+1]);
             copy(p_filts, p_filt, i*4, 0);
             copy(p_projs, p_proj, (i+1)*4, 0);
             sub(p_smooth, p_proj, p_smooth);
-            mul(tmp_4x4_2, p_smooth, tmp_4xN_0);
+            mul_4x4_4xN(tmp_4x4_2, p_smooth, tmp_4xN_0);
             sum(p_filt, tmp_4xN_0, p_smooth);
             copy(p_smooth, p_smooths, 0, i*4);
         }
@@ -304,7 +306,35 @@ void row_sub(const T0 *__restrict in0, const T0 *__restrict in1, T1 *__restrict 
 }
 
 template <typename T0, typename T1>
-void mul(T0 &in0, T1 &in1, InOutFloatTensor &out)
+void mul_4x4_4x4(T0 &in0, T1 &in1, InOutFloatTensor &out)
+{
+    // Don't multiply zero entries in the matrices. The following elements of
+    // the multiplicand, 'in0', are always zero:
+    //   (0,2), (0,3),
+    //   (1,2), (1,3)
+    //   (2,0), (2,1)
+    //   (3,0), (3,1)
+
+    // Fully unroll the inner loop.
+
+    for (int i=0; i<4; ++i)
+    {
+        out[0][i] = in0[0][0] * in1[0][i]
+                  + in0[0][1] * in1[1][i];
+
+        out[1][i] = in0[1][0] * in1[0][i]
+                  + in0[1][1] * in1[1][i];
+
+        out[2][i] = in0[2][2] * in1[2][i]
+                  + in0[2][3] * in1[3][i];
+
+        out[3][i] = in0[3][2] * in1[2][i]
+                  + in0[3][3] * in1[3][i];
+    }
+}
+
+template <typename T0, typename T1>
+void mul_4x4_4xN(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
     int size = in1[0].size();
 
@@ -336,7 +366,7 @@ void mul(T0 &in0, T1 &in1, InOutFloatTensor &out)
 }
 
 template <typename T0, typename T1>
-void inverse(T0 &in, T1 &out)
+void inverse_4x4(T0 &in, T1 &out)
 {
     // Adapted from: https://stackoverflow.com/a/60374938
     // Remove zero terms to reduce operations. The following elements of 'in'
