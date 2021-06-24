@@ -18,8 +18,7 @@
 #include <ipudef.h>
 #include <poplar/Vertex.hpp>
 
-
-#define ALIGN 8     // Byte alignment of input vectors.
+#define ALIGN  8    // Byte alignment of input vectors.
 #define UNROLL 1    // Loop unroll factor.
 
 // Handy aliases for Poplar Input and InOut types. (These are rank-2 tensors.)
