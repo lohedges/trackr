@@ -216,7 +216,7 @@ fully active.
 | **Device**    | **Cores** | **32 bit FLOPS**   | **TDP**  | **Cost**   | **Peak throughput**    |
 |---------------|-----------|--------------------|----------|------------|------------------------|
 | Graphcore GC2 | 1216      | 31.1 TFLOPS        | 120 W \* | $8112 \*\* | 2.2 x 10^6 tracks / s  |
-| i7-9750H      | 6         | 0.3 TFLOPS \*\*\*  | 45 W     | $400       | 26 x 10^6 / tracks / s |
+| i7-9750H      | 6         |  0.3 TFLOPS \*\*\* |  45 W    | $400       |  26 x 10^6 tracks / s  |
 
 \* Two IPUs per board, so half the board TDP.
 
@@ -366,7 +366,7 @@ The following tables show updates of the CPU and IPU performance comparison.
 | **Device**    | **Cores** | **32 bit FLOPS**   | **TDP**  | **Cost**   | **Peak throughput**    |
 |---------------|-----------|--------------------|----------|------------|------------------------|
 | Graphcore GC2 | 1216      | 31.1 TFLOPS        | 120 W    | $8112      | 110 x 10^6 tracks / s  |
-| i7-9750H      | 6         | 0.3 TFLOPS         | 45 W     | $400       | 26 x 10^6 / tracks / s |
+| i7-9750H      | 6         |  0.3 TFLOPS        |  45 W    | $400       |  26 x 10^6 tracks / s  |
 
 A rough comparison of the throughput per dollar and per watt for the current
 implementations gives:
@@ -644,3 +644,8 @@ real world code, where the addition of noise would mean that the number of
 zero matrix terms is fewer, it highlights the benefit of thinking about the
 equations and reducing redundancy wherever possible. Here we achieved roughly
 40% increase in throughput for little effort.
+
+Re-running the OpenMP CPU benchmarks with Clang 12.0.0 and GCC 11.1.0 gives
+a throughput of roughly 30 million tracks per second when processing 408
+tracks in batches of 12, i.e. 1 batch on each CPU thread. The raw single-IPU
+performance is currently around 60 times that of the CPU.
