@@ -82,8 +82,14 @@ int main(int argc, char *argv[])
             exit(-1);
         }
 
+        // Attempt to create a single IPU device so that we can work
+        // out the number of tiles per IPU.
+        auto device = setIpuDevice(1);
+        auto tiles_per_ipu = device.getTarget().getTilesPerIPU();
+        device.detach();
+
         // Work out the number of IPUs that are required.
-        num_ipus = std::ceil(num_tiles / 1216.0);
+        num_ipus = std::ceil(num_tiles / float(tiles_per_ipu));
     }
     // Get the number of hits-per-tile from the command-line.
     if (argc > 2)
