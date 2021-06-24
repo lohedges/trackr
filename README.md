@@ -278,6 +278,10 @@ over tiles using a single track per tile.
 
 ### Benchmarks
 
+(Note that benchmarks were run on a Graphcore Collosus Mk1. The newer MK2 IPUs
+have triple the memory per tile and around 20% more tiles per IPU, and have
+shown up to 9x the performance in other benchmarks.)
+
 The IPU implementation can be benchmarked using using `trackr_benchmark_ipu`, e.g.:
 
 ```
