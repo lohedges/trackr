@@ -72,6 +72,10 @@ Hooray, test passed!
 
 ### Benchmarks
 
+(Note that benchmarks are performed over different realisations of the track
+data. While it shouldn't affect results in this case, i.e. the speed of the
+computation doesn't depend on the data itself, it is nonetheless good practice.)
+
 Benchmarks can be run using `trackr_benchmark`, e.g.:
 
 ```
@@ -280,7 +284,8 @@ over tiles using a single track per tile.
 
 (Note that benchmarks were run on a Graphcore Collosus Mk1. The newer MK2 IPUs
 have triple the memory per tile and around 20% more tiles per IPU, and have
-shown up to 9x the performance in other benchmarks.)
+shown up to 9x the performance in other benchmarks. As before, repeats were run
+over independent, randomly generated track data.)
 
 The IPU implementation can be benchmarked using using `trackr_benchmark_ipu`, e.g.:
 
