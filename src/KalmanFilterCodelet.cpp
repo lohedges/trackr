@@ -107,11 +107,17 @@ public:
     // Overloaded compute function.
     bool compute()
     {
-        // Work out the number of planes from the size of the input
-        // state vector. Hits are packed by column, planes by rows.
+        // Work out the number of planes from the size of the input state
+        // vector. Hits are packed by column, planes by rows.
         int num_planes = p0.size() / 4;
 
-        // Copy the state vector for the first plane into p.
+        // Copy the state vector for the first plane into p. We pass a stride
+        // of 2 to skip rows that are empty in the initial state.(All elements
+        // are zero.) Note that this would be unsafe if we were running the
+        // codelet multiple times while streaming in new data, since we would
+        // want to zero all entries in 'p' from the previous run. The same
+        // applies when copying the inital state 'p0' into 'm' within the loop
+        // below.
         copy(p0, p, 0, 0, 2);
 
         // Initialise the covariance matrix.
