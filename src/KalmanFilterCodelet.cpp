@@ -18,15 +18,9 @@
 #include <ipudef.h>
 #include <poplar/Vertex.hpp>
 
-// Byte alignment of input vectors.
-#define ALIGN 8
 
-// Loop unroll factor.
-#ifdef TEST
-    #define UNROLL 2
-#else
-    #define UNROLL 1
-#endif
+#define ALIGN 8     // Byte alignment of input vectors.
+#define UNROLL 1    // Loop unroll factor.
 
 // Handy aliases for Poplar Input and InOut types. (These are rank-2 tensors.)
 // We use the VectorLayout::SPAN so that we have access to the .size() member to
@@ -195,15 +189,15 @@ void copy(T0 &in, T1 &out, int offset_in, int offset_out, int stride)
 {
     // Work out the number of hits. (Each row has the same number of columns.)
     // This must be a multiple of 8, which is validated elsewhere. We divide by
-    // two since we cast to float2, i.e. float2 contains two floats.
-    int size = in[0].size() / 2;
+    // two since we cast to float4, i.e. float4 contains 4 floats.
+    int size = in[0].size() / 4;
 
     for (int i=0; i<4; i+=stride)
     {
-        // Cast to float2 to instruct compiler to emit 64-bit wide,
+        // Cast to float4 to instruct compiler to emit 128-bit wide,
         // aligned instructions for 32-bit elements.
-        float2 *p_in = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in[i+offset_in][0]));
-        float2 *p_out = reinterpret_cast<float2 *>(&out[i+offset_out][0]);
+        float4 *p_in = const_cast<float4 *>(reinterpret_cast<const float4 *>(&in[i+offset_in][0]));
+        float4 *p_out = reinterpret_cast<float4 *>(&out[i+offset_out][0]);
 
         // Process the row.
         row_copy(p_in, p_out, size);
@@ -246,16 +240,16 @@ void sum(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
     // Work out the number of hits. (Each row has the same number of columns.)
     // This must be a multiple of 8, which is validated elsewhere. We divide by
-    // two since we cast to float2, i.e. float2 contains two floats.
-    int size = in0[0].size() / 2;
+    // two since we cast to float4, i.e. float4 contains 4 floats.
+    int size = in0[0].size() / 4;
 
     for (int i=0; i<4; ++i)
     {
-        // Cast to float2 to instruct compiler to emit 64-bit wide,
+        // Cast to float4 to instruct compiler to emit 128-bit wide,
         // aligned instructions for 32-bit elements.
-        float2 *p_in0 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in0[i][0]));
-        float2 *p_in1 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in1[i][0]));
-        float2 *p_out = reinterpret_cast<float2 *>(&out[i][0]);
+        float4 *p_in0 = const_cast<float4 *>(reinterpret_cast<const float4 *>(&in0[i][0]));
+        float4 *p_in1 = const_cast<float4 *>(reinterpret_cast<const float4 *>(&in1[i][0]));
+        float4 *p_out = reinterpret_cast<float4 *>(&out[i][0]);
 
         // Process the row.
         row_sum(p_in0, p_in1, p_out, size);
@@ -278,16 +272,16 @@ void sub(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
     // Work out the number of hits. (Each row has the same number of columns.)
     // This must be a multiple of 8, which is validated elsewhere. We divide by
-    // two since we cast to float2, i.e. float2 contains two floats.
-    int size = in0[0].size() / 2;
+    // two since we cast to float4, i.e. float4 contains 4 floats.
+    int size = in0[0].size() / 4;
 
     for (int i=0; i<4; ++i)
     {
-        // Cast to float2 to instruct compiler to emit 64-bit wide,
+        // Cast to float4 to instruct compiler to emit 128-bit wide,
         // aligned instructions for 32-bit elements.
-        float2 *p_in0 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in0[i][0]));
-        float2 *p_in1 = const_cast<float2 *>(reinterpret_cast<const float2 *>(&in1[i][0]));
-        float2 *p_out = reinterpret_cast<float2 *>(&out[i][0]);
+        float4 *p_in0 = const_cast<float4 *>(reinterpret_cast<const float4 *>(&in0[i][0]));
+        float4 *p_in1 = const_cast<float4 *>(reinterpret_cast<const float4 *>(&in1[i][0]));
+        float4 *p_out = reinterpret_cast<float4 *>(&out[i][0]);
 
         // Process the row.
         row_sub(p_in0, p_in1, p_out, size);

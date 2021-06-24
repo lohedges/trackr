@@ -44,8 +44,8 @@ KalmanFilterIPU::KalmanFilterIPU(
     // Work out the number of hardware threads per-tile.
     auto num_workers = this->device.getTarget().getNumWorkerContexts();
 
-    // Make sure that the number of hits is a multiple of num_workers and 8.
-    // (num_workers threads per tile with 8 unrolled float2 loops per thread.)
+    // Make sure that the number of hits is a multiple of num_workers and
+    // byte-alignment.
     if (not is_test)
     {
         if ((hits_per_tile % num_workers != 0) or (hits_per_tile % 8 != 0))
@@ -114,10 +114,7 @@ KalmanFilterIPU::KalmanFilterIPU(
     // which gives the best performance at present. (The default when no
     // additional compiler flags are specified is -O2.)
     poplar::Graph graph(this->device);
-    if (is_test)
-        graph.addCodelets({"src/KalmanFilterCodelet.cpp"}, "-O3 -DTEST");
-    else
-        graph.addCodelets({"src/KalmanFilterCodelet.cpp"}, "-O3");
+    graph.addCodelets({"src/KalmanFilterCodelet.cpp"}, "-O3");
     this->graph = std::move(graph);
 
     // Setup the graph program.

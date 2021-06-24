@@ -491,6 +491,11 @@ class MyVertex : public poplar::Vertex
         ...
 ```
 
+(It turns out that using `float4` gives a further 8% increase in throughput.
+Although the benchmark paper above implies that loads and writes aren't
+enhanced by using `float4`, perhaps other instructions, such as additions
+and subtractions, are.)
+
 In addition, the `popc` compiler also supports the use of the `__restrict` type
 qualifier, meaning that we can specify that the pointer is not aliased, which
 should help the compiler to vectorise any loops over any arrays accessed via
