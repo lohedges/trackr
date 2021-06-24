@@ -78,12 +78,6 @@ int main()
             0.32937927,  0.32937927;
     hits.push_back(hit);
 
-    hit << -0.12062073,   0.17937927,
-           -0.27062073,   0.17937927,
-           -0.42062073,   0.32937927,
-           -0.42062073,   0.47937927,
-           -0.57062073,   0.47937927;
-
     // Setup the IPU device handle.
     auto device = setIpuDeviceWithIpuModelFallBack();
 
