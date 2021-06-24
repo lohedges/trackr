@@ -25,15 +25,9 @@
 #include <poplar/Engine.hpp>
 #include <poplar/Graph.hpp>
 
-/// Typedef for poplar compatible RowMajor matrices.
+/// Type alias for poplar compatible RowMajor matrices.
 using MatrixRowMajorXf =
     Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-
-/// Convenience typedef for DynamicStride.
-using DynamicStride = Eigen::Stride<Eigen::Dynamic, Eigen::Dynamic>;
-
-/// Configure how data is mapped from Poplar to Eigen.
-using EigenPoplarMapXf = Eigen::Map<MatrixRowMajorXf, Eigen::Unaligned, DynamicStride>;
 
 class KalmanFilterIPU
 {

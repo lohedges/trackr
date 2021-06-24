@@ -28,7 +28,7 @@
     #define UNROLL 1
 #endif
 
-// Handy typedefs for Poplar Input and InOut types. (These are rank-2 tensors.)
+// Handy aliases for Poplar Input and InOut types. (These are rank-2 tensors.)
 // We use the VectorLayout::SPAN so that we have access to the .size() member to
 // work out the input size dynamically. For a production run, with a fixed
 // number of tracks, we could instead use VectorLayout::ONE_PTR. See:
