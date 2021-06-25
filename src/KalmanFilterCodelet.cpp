@@ -119,7 +119,7 @@ public:
         int num_planes = p0.size() / 4;
 
         // Copy the state vector for the first plane into p. We pass a stride
-        // of 2 to skip rows that are empty in the initial state.(All elements
+        // of 2 to skip rows that are empty in the initial state. (All elements
         // are zero.) Note that this would be unsafe if we were running the
         // codelet multiple times while streaming in new data, since we would
         // want to zero all entries in 'p' from the previous run. The same
