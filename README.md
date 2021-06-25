@@ -658,3 +658,10 @@ Re-running the OpenMP CPU benchmarks with Clang 12.0.0 and GCC 11.1.0 gives
 a throughput of roughly 30 million tracks per second when processing 408
 tracks in batches of 12, i.e. 1 batch on each CPU thread. The raw single-IPU
 performance is currently around 60 times that of the CPU.
+
+### Further tweaks
+
+After further testing it was found that using `float4` rather than `float2`
+leads to an 8% increase in throughput. In addition, removing the `__restrict`
+qualifier increases throughput by another 4%. The single-IPU performance now
+stands at approximately 2.02 billion tracks per second.
