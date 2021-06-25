@@ -44,14 +44,24 @@ KalmanFilterIPU::KalmanFilterIPU(
     // Work out the number of hardware threads per-tile.
     auto num_workers = this->device.getTarget().getNumWorkerContexts();
 
-    // Make sure that the number of hits is a multiple of num_workers and
-    // byte-alignment.
     if (not is_test)
     {
-        if ((hits_per_tile % num_workers != 0) or (hits_per_tile % 8 != 0))
+        // We need at least 24 hits per tile to ensure that we have 4 hits
+        // per thread.
+        if (hits_per_tile < 24)
+        {
+            std::cerr << "The minimum number of hits per tile is 24!\n";
+            exit(-1);
+        }
+
+        // Make sure that the number of hits is a multiple of num_workers and 4.
+        // (For certain operations we process 4 floats simulatneously by casting
+        // to float4.) If loop unrolling, we will also need to ensure that the
+        // hits per tile is a multiple of 4 times the unroll factor.
+        if ((hits_per_tile % num_workers != 0) or (hits_per_tile % 4 != 0))
         {
             std::cerr << "The number of hits per tile must be divisible by "
-                      << num_workers << " and 8!\n";
+                      << num_workers << " and 4!\n";
             exit(-1);
         }
     }
