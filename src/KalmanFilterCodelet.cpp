@@ -18,8 +18,15 @@
 #include <ipudef.h>
 #include <poplar/Vertex.hpp>
 
-#define ALIGN  8    // Byte alignment of input vectors.
-#define UNROLL 1    // Loop unroll factor.
+// Byte alignment of input vectors. 8-byte alignment seems to give the best
+// performance. Not sure why we don't need 16-byte alignment when casting
+// to float4.
+#define ALIGN  8
+
+// Loop unroll factor. Currently setting to anything other than 1 slightly
+// degrades performance. Leave here so that we can still test using different
+// versions of the SDK.
+#define UNROLL 1
 
 // Handy aliases for Poplar Input and InOut types. (These are rank-2 tensors.)
 // We use the VectorLayout::SPAN so that we have access to the .size() member to
