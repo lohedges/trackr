@@ -51,7 +51,7 @@ using InOutFloatTensor =
 template <typename T0, typename T1>
 void copy(T0 &in, T1 &out, int offset_in, int offset_out, int stride=1);
 template <typename T0, typename T1>
-void row_copy(const T0 *__restrict in, T1 *__restrict out, int size);
+void row_copy(const T0 *in, T1 *out, int size);
 template <typename T0, typename T1>
 void fast_copy(T0 &in, T1 &out, int offset_in, int offset_out);
 
@@ -59,13 +59,13 @@ void fast_copy(T0 &in, T1 &out, int offset_in, int offset_out);
 template <typename T0, typename T1>
 void sum(T0 &in0, T1 &in1, InOutFloatTensor &out);
 template <typename T0, typename T1>
-void row_sum(const T0 *__restrict in0, const T0 *__restrict in1, T1 *__restrict out, int size);
+void row_sum(const T0 *in0, const T0 *in1, T1 *out, int size);
 
 // Subtract 'in0' and 'in1', placing the result in 'out'.
 template <typename T0, typename T1>
 void sub(T0 &in0, T1 &in1, InOutFloatTensor &out);
 template <typename T0, typename T1>
-void row_sub(const T0 *__restrict in0, const T0 *__restrict in1, T1 *__restrict out, int size);
+void row_sub(const T0 *in0, const T0 *in1, T1 *out, int size);
 
 // Multiply 'in0' and 'in1', placing the result in 'out'.
 template <typename T0, typename T1>
@@ -217,7 +217,7 @@ void copy(T0 &in, T1 &out, int offset_in, int offset_out, int stride)
 }
 
 template <typename T0, typename T1>
-void row_copy(const T0 *__restrict in, T1 *__restrict out, int size)
+void row_copy(const T0 *in, T1 *out, int size)
 {
     for (int i=0; i<size; i+=UNROLL)
     {
@@ -269,7 +269,7 @@ void sum(T0 &in0, T1 &in1, InOutFloatTensor &out)
 }
 
 template <typename T0, typename T1>
-void row_sum(const T0 *__restrict in0, const T0 *__restrict in1, T1 *__restrict out, int size)
+void row_sum(const T0 *in0, const T0 *in1, T1 *out, int size)
 {
     for (int i=0; i<size; i+=UNROLL)
     {
@@ -301,7 +301,7 @@ void sub(T0 &in0, T1 &in1, InOutFloatTensor &out)
 }
 
 template <typename T0, typename T1>
-void row_sub(const T0 *__restrict in0, const T0 *__restrict in1, T1 *__restrict out, int size)
+void row_sub(const T0 *in0, const T0 *in1, T1 *out, int size)
 {
     for (int i=0; i<size; i+=UNROLL)
     {

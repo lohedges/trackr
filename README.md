@@ -563,7 +563,9 @@ approximately 1.15 billion tracks per second.
 Breaking down the peformance contribution of the different vectorisation tricks
 gives some surprising results.
 
-* The use of `__restrict` makes no difference whatsover.
+* The use of `__restrict` makes no difference whatsover. (Further testing has
+shown that removing the qualifier leads to ~4% increase in throughput when
+using `float4` type casting.)
 * Loop unrolling generally slows the code (slightly), i.e. the optimum unroll
 factor is 1. However, manually unrolling the inner-most multiplication loop
 does produce a big performance gain.
