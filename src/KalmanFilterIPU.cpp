@@ -46,22 +46,31 @@ KalmanFilterIPU::KalmanFilterIPU(
 
     if (not is_test)
     {
-        // We need at least 24 hits per tile to ensure that we have 4 hits
-        // per thread.
-        if (hits_per_tile < 24)
+        // We need at least (4 x num_workers) hits per tile.
+        if (hits_per_tile < 4*num_workers)
         {
             std::cerr << "The minimum number of hits per tile is 24!\n";
             exit(-1);
         }
 
-        // Make sure that the number of hits is a multiple of num_workers and 4.
-        // (For certain operations we process 4 floats simulatneously by casting
-        // to float4.) If loop unrolling, we will also need to ensure that the
-        // hits per tile is a multiple of 4 times the unroll factor.
-        if ((hits_per_tile % num_workers != 0) or (hits_per_tile % 4 != 0))
+        // Make sure the number of hits is a multiple of num_workers.
+        if (hits_per_tile % num_workers != 0)
         {
             std::cerr << "The number of hits per tile must be divisible by "
-                      << num_workers << " and 4!\n";
+                      << num_workers << "\n";
+            exit(-1);
+        }
+
+        // Make sure the number of hits per worker is a multiple of 4. (For
+        // certain operations we process 4 floats simulatneously by casting
+        // to float4.) If loop unrolling, we will also need to ensure that
+        // the hits per worker is a multiple of 4 times the unroll factor.
+        auto hits_per_worker = hits_per_tile / num_workers;
+        if (hits_per_worker % 4 != 0)
+        {
+            std::cerr << "There are " << num_workers << " workers per tile. "
+                      << "The number of hits per worker must be equal to 4. "
+                      << "Currently equal to " << hits_per_worker << ".\n";
             exit(-1);
         }
     }
