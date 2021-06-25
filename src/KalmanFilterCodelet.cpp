@@ -200,8 +200,8 @@ template <typename T0, typename T1>
 void copy(T0 &in, T1 &out, int offset_in, int offset_out, int stride)
 {
     // Work out the number of hits. (Each row has the same number of columns.)
-    // This must be a multiple of 8, which is validated elsewhere. We divide by
-    // two since we cast to float4, i.e. float4 contains 4 floats.
+    // This must be a multiple of 4, which is validated elsewhere. We divide by
+    // four since we cast to float4, i.e. float4 contains 4 floats.
     int size = in[0].size() / 4;
 
     for (int i=0; i<4; i+=stride)
@@ -251,8 +251,8 @@ template <typename T0, typename T1>
 void sum(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
     // Work out the number of hits. (Each row has the same number of columns.)
-    // This must be a multiple of 8, which is validated elsewhere. We divide by
-    // two since we cast to float4, i.e. float4 contains 4 floats.
+    // This must be a multiple of 4, which is validated elsewhere. We divide by
+    // four since we cast to float4, i.e. float4 contains 4 floats.
     int size = in0[0].size() / 4;
 
     for (int i=0; i<4; ++i)
@@ -283,8 +283,8 @@ template <typename T0, typename T1>
 void sub(T0 &in0, T1 &in1, InOutFloatTensor &out)
 {
     // Work out the number of hits. (Each row has the same number of columns.)
-    // This must be a multiple of 8, which is validated elsewhere. We divide by
-    // two since we cast to float4, i.e. float4 contains 4 floats.
+    // This must be a multiple of 4, which is validated elsewhere. We divide by
+    // four since we cast to float4, i.e. float4 contains 4 floats.
     int size = in0[0].size() / 4;
 
     for (int i=0; i<4; ++i)
