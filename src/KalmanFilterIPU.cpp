@@ -201,7 +201,8 @@ std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute(double &secs,
         // Read the data back into a single matrix packed as hits along the columns
         // and planes along the rows. (Every fourth row is the start of a new plane.)
         MatrixRowMajorXf p_smooths(4*this->num_planes, this->hits_per_tile);
-        engine.readTensor("p_smooths", p_smooths.data());
+        engine.readTensor("p_smooths", p_smooths.data(),
+            &p_smooths.data()[4*this->num_planes*this->hits_per_tile]);
 
         // Split the hits by plane. (For consistency with the CPU code.)
         for (int i=0; i<this->num_planes; ++i)
