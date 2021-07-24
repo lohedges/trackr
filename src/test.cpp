@@ -34,7 +34,7 @@ int main()
     float distance = 1;
     float sigma = 10e-2;
 
-    // Initalise a vector to hold the tracks.
+    // Initialise a vector to hold the tracks.
     std::vector<Eigen::MatrixXf> hits;
 
     // Add some reference tracks from the Python implementation.
@@ -75,7 +75,7 @@ int main()
            -0.57062073,   0.47937927;
     hits.push_back(hit);
 
-    // Initalise the Kalman filter.
+    // Initialise the Kalman filter.
     KalmanFilter kalmanFilter(hits, distance, sigma);
 
     // Execute the Kalman filter and return the smoothed hits at each plane.

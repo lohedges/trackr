@@ -382,7 +382,7 @@ still gives around 5 times the performance per dollar.
 Note that the benchmark code was compiled with `-O3` optimisation flags. Further
 tests have shown that the `-O2` optimisation level performs slightly better at
 roughly 120 million tracks per scond using batches of 400 tracks on all 1216
-tiles of a single IPU. In constrast, when turning off optimisations, i.e. `-O0`,
+tiles of a single IPU. In contrast, when turning off optimisations, i.e. `-O0`,
 the performance drops to around 1.6 million tracks per second. Having removed
 all additional compiler flags passed to `graph.addCodelets`, it appears that the
 default optimisation level is `-O2`, hence the original code _should_ have been
@@ -391,7 +391,7 @@ compiled with this level of optimisation enabled.
 #### Hardware threads
 
 Each IPU tile has 6 hardware worker threads that run in a time-sliced fashion.
-By scheduling multile vertices on the same tile within the same compute set, we
+By scheduling multiple vertices on the same tile within the same compute set, we
 can use task-based parallelism to hide instruction and memory latency and
 increase throughput by approximately 6x (theoretically). For the Kalman filter
 code, this can be achieved by splitting the tracks assigned to each tile over
@@ -411,7 +411,7 @@ All data has been averaged over 100 independent repeats.
 
 For all batch sizes there is a marked increase in performance when using
 6 hardware threads on all tiles of the IPU. For the largest batch size, 400,
-the peaks throughput reachs around 430 million tracks per second, a four-fold
+the peaks throughput reaches around 430 million tracks per second, a four-fold
 increase on the single-threaded performance. The throughput scaling shows
 some interesting features that will be investigated further. While the
 threaded performance initially increases approximately linearly, there
@@ -429,7 +429,7 @@ repeat is a single run.) However, a benchmarking paper (available from the
 Graphcore website
 [here](https://www.graphcore.ai/hubfs/assets/pdf/Citadel%20Securities%20Technical%20Report%20-%20Dissecting%20the%20Graphcore%20IPU%20Architecture%20via%20Microbenchmarking%20Dec%202019.pdf?hsLang=en))
 advocates the use of an untimed warm-up iteration of any benchmark prior to
-timing. This is used to exlude any warm-up overheads from the results,
+timing. This is used to exclude any warm-up overheads from the results,
 ensuring that steady-state measurements are achieved. The following figure
 shows a comparison between the _cold_ threaded benchmarks shown previously
 and those run once the system was _warm_.
@@ -455,7 +455,7 @@ e.g.:
 
 This will write a profiling report to `profile.txt` in the current directory.
 Sensible execution profiling options have been set, but can be adjusted by
-setting appopriate entries in the `POPLAR_ENGINE_OPTIONS` environment variable,
+setting appropriate entries in the `POPLAR_ENGINE_OPTIONS` environment variable,
 e.g.:
 
 ```
@@ -507,7 +507,7 @@ cast all tensor rows (track hits) to `float2 *` and pass these to sub
 functions to perform per-row operations (copies, additions, subtractions) in
 an unrolled fashion. From the benchmarking paper linked to above, it would
 appear that an unroll factor of 8 would be most appropriate. With this in
-mind, the bechmark code was updated to require track numbers that are multiples
+mind, the benchmark code was updated to require track numbers that are multiples
 of 6 and 8 only, i.e. divisible over the hardware threads on each IPU and
 possible to be unrolled by a factor of 8.
 
@@ -560,7 +560,7 @@ a warmup run, to 408 tracks per tile run in the _vectorised_ fashion.
 When running on all 1216 tiles of the IPU, the peak throughput now reaches
 approximately 1.15 billion tracks per second.
 
-Breaking down the peformance contribution of the different vectorisation tricks
+Breaking down the performance contribution of the different vectorisation tricks
 gives some surprising results.
 
 * The use of `__restrict` makes no difference whatsover. (Further testing has

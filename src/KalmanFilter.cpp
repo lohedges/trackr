@@ -44,7 +44,7 @@ KalmanFilter::KalmanFilter(
     // Loop over each of the planes.
     for (int i=0; i<this->num_planes; ++i)
     {
-        // Initalise a matrix to hold the hits for this plane.
+        // Initialise a matrix to hold the hits for this plane.
         Eigen::MatrixXf plane_hits(this->num_hits, 2);
 
         // Loop over each of the hits.
@@ -57,7 +57,7 @@ KalmanFilter::KalmanFilter(
         hits_plane.push_back(plane_hits);
     }
 
-    // Initalise Kalman matrices.
+    // Initialise Kalman matrices.
 
     // Transfer matrix. (Linear operator.)
     this->F << 1, distance, 0,        0,
@@ -88,7 +88,7 @@ KalmanFilter::KalmanFilter(
 
 std::vector<Eigen::MatrixXf> KalmanFilter::execute()
 {
-    // Initalise state of system: { x, tan(theta), y, tan(phi) }
+    // Initialise state of system: { x, tan(theta), y, tan(phi) }
     // Use {x, 0, y, 0} for hits from the first plane.
     Eigen::MatrixXf p0 = Eigen::MatrixXf::Zero(4, this->num_hits);
     p0.row(0) = this->hits_plane[0].col(0).transpose();
@@ -99,7 +99,7 @@ std::vector<Eigen::MatrixXf> KalmanFilter::execute()
     std::vector<Eigen::MatrixXf> p_filts(this->num_planes);
     std::vector<Eigen::MatrixXf> C_filts(this->num_planes);
 
-    // Intialise the state and covariance matrix.
+    // Initialise the state and covariance matrix.
     auto p = p0;
     auto C = this->C0;
 
@@ -108,7 +108,7 @@ std::vector<Eigen::MatrixXf> KalmanFilter::execute()
     auto HTG = this->H.transpose() * this->G;
     auto HTGH = HTG * this->H;
 
-    // Initalise a matrix for the measurements: ({ x, tan(theta), y, tan(phi) }
+    // Initialise a matrix for the measurements: ({ x, tan(theta), y, tan(phi) }
     Eigen::MatrixXf mm = Eigen::MatrixXf::Zero(4, this->num_hits);
 
     // Step forward through the planes to linearly project the state and

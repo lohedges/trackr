@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
 
     for (int i=0; i<num_repeats; ++i)
     {
-        // Initalise a vector to hold the tracks.
+        // Initialise a vector to hold the tracks.
         std::vector<MatrixRowMajorXf> hits(num_hits);
 
         // Generate the tracks.
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
         // Setup the IPU device handle.
         auto device = setIpuDevice(num_ipus);
 
-        // Initalise the Kalman filter.
+        // Initialise the Kalman filter.
         KalmanFilterIPU kalmanFilter(std::move(device),
                                      hits,
                                      num_tiles,

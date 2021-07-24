@@ -107,14 +107,14 @@ int main(int argc, char *argv[])
 
     for (int i=0; i<num_repeats; ++i)
     {
-        // Initalise a vector to hold the tracks.
+        // Initialise a vector to hold the tracks.
         std::vector<Eigen::MatrixXf> hits(num_hits);
 
         // Generate the tracks.
         for (int j=0; j<num_hits; ++j)
             hits[j] = trackGenerator.generateTrack().first;
 
-        // Initalise the Kalman filter.
+        // Initialise the Kalman filter.
         KalmanFilter kalmanFilter(hits, distance, sigma);
 
         // Record start time.

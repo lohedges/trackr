@@ -84,7 +84,7 @@ KalmanFilterIPU::KalmanFilterIPU(
     // Loop over each of the planes.
     for (int i=0; i<this->num_planes; ++i)
     {
-        // Initalise a matrix to hold the hits for this plane.
+        // Initialise a matrix to hold the hits for this plane.
         MatrixRowMajorXf plane_hits(this->num_hits, 2);
 
         // Loop over each of the hits.
@@ -97,7 +97,7 @@ KalmanFilterIPU::KalmanFilterIPU(
         hits_plane.push_back(plane_hits);
     }
 
-    // Initalise Kalman matrices.
+    // Initialise Kalman matrices.
 
     // Transfer matrix. (Linear operator.)
     this->F = MatrixRowMajorXf(4, 4);
@@ -129,7 +129,7 @@ KalmanFilterIPU::KalmanFilterIPU(
                 0,         0,    sigma_sqd, 0,
                 0,         0,    0,         M_PI;
 
-    // Initalise the graph and apply codelets. Set optimisation level to -O3,
+    // Initialise the graph and apply codelets. Set optimisation level to -O3,
     // which gives the best performance at present. (The default when no
     // additional compiler flags are specified is -O2.)
     poplar::Graph graph(this->device);
@@ -257,7 +257,7 @@ void KalmanFilterIPU::setupGraphProgram()
             // Only continue if there are hits to process.
             if (hits_per_thread > 0)
             {
-                // Initalise state of system: { x, tan(theta), y, tan(phi) }
+                // Initialise state of system: { x, tan(theta), y, tan(phi) }
                 // Use {x, 0, y, 0} column vectors for the initial hits. The matrix is
                 // packed as hits along the columns and planes along the rows. (Every
                 // fourth row is the start of a new plane.)
@@ -342,7 +342,7 @@ void KalmanFilterIPU::setupGraphProgram()
                 this->graph.setTileMapping(c_HTG, i);
                 this->graph.setTileMapping(c_HTGH, i);
 
-                // Copy the inital data.
+                // Copy the initial data.
                 this->prog.add(poplar::program::Copy(c_p0, v_p0));
                 this->prog.add(poplar::program::Copy(c_F, v_F));
                 this->prog.add(poplar::program::Copy(c_C0, v_C0));

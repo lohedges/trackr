@@ -44,7 +44,7 @@ int main()
     // Work out the number of hits.
     int num_hits = num_tiles * hits_per_tile;
 
-    // Initalise a vector to hold the tracks.
+    // Initialise a vector to hold the tracks.
     std::vector<MatrixRowMajorXf> hits;
 
     // Add some reference tracks from the Python implementation.
@@ -81,7 +81,7 @@ int main()
     // Setup the IPU device handle.
     auto device = setIpuDeviceWithIpuModelFallBack();
 
-    // Initalise the Kalman filter.
+    // Initialise the Kalman filter.
     KalmanFilterIPU kalmanFilter(std::move(device),
                                  hits,
                                  num_tiles,

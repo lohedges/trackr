@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    // Initalise a track generator for each batch.
+    // Initialise a track generator for each batch.
     std::vector<TrackGenerator> track_generators(num_batches);
     for (int i=0; i<num_batches; ++i)
     {
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 
     for (int i=0; i<num_repeats; ++i)
     {
-        // Initalise a vector to hold the tracks.
+        // Initialise a vector to hold the tracks.
         std::vector<std::vector<Eigen::MatrixXf> > hits(
                 num_batches,
                 std::vector<Eigen::MatrixXf>(num_hits));
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
             for (int k=0; k<num_hits; ++k)
                 hits[j][k] = track_generators[j].generateTrack().first;
 
-        // Initalise a Kalman filter for each batch.
+        // Initialise a Kalman filter for each batch.
         std::vector<KalmanFilter> kalman_filters(num_batches);
         # pragma omp parallel for
         for (int j=0; j<num_batches; ++j)
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
         // Record start time.
         auto start = std::chrono::high_resolution_clock::now();
 
-        // Initalise a vector to hold the smoothed track hits from each batch.
+        // Initialise a vector to hold the smoothed track hits from each batch.
         std::vector<std::vector<Eigen::MatrixXf> > smoothed_hits(
                 num_batches,
                 std::vector<Eigen::MatrixXf>(num_planes));
