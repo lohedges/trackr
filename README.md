@@ -267,7 +267,7 @@ using the old CXX11 ABI.)
 To test the IPU implementation, run:
 
 ```
-./track_test_ipu
+./trackr_test_ipu
 ```
 
 If successful, you should once again see:
