@@ -9,7 +9,7 @@ else ifeq ($(CXX),clang++)
 endif
 
 ABIFLAGS := -D_GLIBCXX_USE_CXX11_ABI=0
-POPLARFLAGS :=-std=c++17 -L/opt/poplar/lib64 -lpoplar -lpopops
+POPLARFLAGS :=-std=c++17 -L/opt/poplar/lib64 -lpoplar
 
 # Compile benchmark and test. We could create and link against a re-usable
 # library, but will leave for now.
