@@ -665,3 +665,20 @@ After further testing it was found that using `float4` rather than `float2`
 leads to an 8% increase in throughput. In addition, removing the `__restrict`
 qualifier increases throughput by another 4%. The single-IPU performance now
 stands at approximately 2.02 billion tracks per second.
+
+### MK2 hardware and 2.4 SDK
+
+We have recently obtained access to MK2 IPU hardware at the CERN testbed.
+Re-running the benchmarks above using both the new hardware and latest
+(2.4) SDK has highlighted some intersting behaviour. Previously, following
+a single warm-up run, throughput statistics were highly reproducible and
+followed a near-perfect linear trend. (Via correspondence with Graphcore,
+the intial run incurs an additional overhead from setting up data structures
+on the IPU. These can be re-used on repeat runs of the _same_ graph program,
+so the cost is not paid again.) With the 2.4 SDK this behaviour is no longer
+observed and run-to-run flucuations are much larger, irrespective of whether
+a warm-up run was performed. Additionally, for the final benchmark parameters
+used above (408 tracks, 1216 tiles, 100 repeats) the newer MK2 hardware
+exhibits the largest fluctuations and worst overall performance.
+
+![Benchmarks IPU (hardware and SDK comparision)](https://github.com/lohedges/trackr/raw/main/benchmarks/benchmarks_hardware_sdk.png)
