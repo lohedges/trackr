@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := all
 
-CXX := g++
+CXX := clang++
 CXXFLAGS := -O3 -Isrc -I eigen
 ifeq ($(CXX),g++)
 	OMPFLAGS := -fopenmp
@@ -8,7 +8,7 @@ else ifeq ($(CXX),clang++)
 	OMPFLAGS += -fopenmp=libomp
 endif
 
-ABIFLAGS := -D_GLIBCXX_USE_CXX11_ABI=0
+ABIFLAG := 0
 POPLARFLAGS :=-std=c++17 -L/opt/poplar/lib64 -lpoplar
 
 # Compile benchmark and test. We could create and link against a re-usable
@@ -20,8 +20,8 @@ all:
 
 # Compile benchmark and test for IPU.
 ipu:
-	$(CXX) $(CXXFLAGS) $(ABIFLAGS) $(POPLARFLAGS) $(OPTFLAGS) src/benchmark_ipu.cpp src/TrackGenerator.cpp src/KalmanFilterIPU.cpp -o trackr_benchmark_ipu
-	$(CXX) $(CXXFLAGS) $(ABIFLAGS) $(POPLARFLAGS) $(OPTFLAGS) src/test_ipu.cpp src/TrackGenerator.cpp src/KalmanFilterIPU.cpp -o trackr_test_ipu
+	$(CXX) $(CXXFLAGS) -D_GLIBCXX_USE_CXX11_ABI=$(ABIFLAG) $(POPLARFLAGS) $(OPTFLAGS) src/benchmark_ipu.cpp src/TrackGenerator.cpp src/KalmanFilterIPU.cpp -o trackr_benchmark_ipu
+	$(CXX) $(CXXFLAGS) -D_GLIBCXX_USE_CXX11_ABI=$(ABIFLAG) $(POPLARFLAGS) $(OPTFLAGS) src/test_ipu.cpp src/TrackGenerator.cpp src/KalmanFilterIPU.cpp -o trackr_test_ipu
 
 # Remove binaries.
 clean:
