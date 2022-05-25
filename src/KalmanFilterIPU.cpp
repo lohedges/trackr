@@ -174,13 +174,13 @@ std::vector<MatrixRowMajorXf> KalmanFilterIPU::execute(double &secs,
         engine.run(0);
 
     // Record start time.
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = std::chrono::steady_clock::now();
 
     // Run the program.
     engine.run(0);
 
     // Record end time.
-    auto finish = std::chrono::high_resolution_clock::now();
+    auto finish = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed = finish - start;
 
     // Calculate run time in seconds..

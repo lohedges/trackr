@@ -118,13 +118,13 @@ int main(int argc, char *argv[])
         KalmanFilter kalmanFilter(hits, distance, sigma);
 
         // Record start time.
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::steady_clock::now();
 
         // Execute the Kalman filter and return the smoothed hits at each plane.
         auto smoothed_hits = kalmanFilter.execute();
 
         // Record end time.
-        auto finish = std::chrono::high_resolution_clock::now();
+        auto finish = std::chrono::steady_clock::now();
         std::chrono::duration<double> elapsed = finish - start;
 
         // Calculate and store the throughput.

@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
             kalman_filters[j] = KalmanFilter(hits[j], distance, sigma);
 
         // Record start time.
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::steady_clock::now();
 
         // Initialise a vector to hold the smoothed track hits from each batch.
         std::vector<std::vector<Eigen::MatrixXf> > smoothed_hits(
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
             smoothed_hits[j] = kalman_filters[j].execute();
 
         // Record end time.
-        auto finish = std::chrono::high_resolution_clock::now();
+        auto finish = std::chrono::steady_clock::now();
         std::chrono::duration<double> elapsed = finish - start;
 
         // Calculate and store the throughput.
